@@ -1,108 +1,101 @@
-# 🤖 LUMA-LAMMA
+# 💬 LUMA-LAMMA
 
-AI Chat Agent dengan Ollama - **100% Local, Private, & Free!**
-
-Chat dengan berbagai model LLM open-source langsung dari komputer Anda tanpa perlu internet atau API key.
+**Free AI Chat** - Chat dengan berbagai model LLM gratis langsung dari browser!
 
 ## ✨ Fitur
 
-- 🏠 **100% Local** - Tidak perlu koneksi internet
-- 🔒 **100% Private** - Data tidak pernah meninggalkan komputer Anda
-- 💰 **100% Free** - Tidak perlu API key atau credits
-- ⚡ **Cepat** - Jalankan langsung di mesin lokal
-- 🎨 **UI Modern** - Interface web yang clean dan responsif
-- 💬 **Conversation History** - Menyimpan histori percakapan
+- 🌐 **Online** - Tidak perlu install software
+- 💰 **100% Free** - 8 model gratis dari OpenRouter
+- 🎨 **UI Modern** - Interface web yang clean & responsif
+- ⚡ **Cepat** - Response time yang cepat
 - 🧠 **Multi Model** - Pilihan berbagai model LLM populer
 
 ## 🚀 Quick Start
 
-### 1. Install Ollama
+### Langsung Buka
+
+```
+https://antono4.github.io/LUMA-LAMMA/
+```
+
+### Atau Jalankan Lokal
 
 ```bash
-# macOS/Linux
-curl -fsSL https://ollama.com/install.sh | sh
+# Download file
+curl -O https://raw.githubusercontent.com/antono4/LUMA-LAMMA/main/index.html
 
-# Windows - Download dari https://ollama.com
+# Buka langsung di browser
+# Double-click file index.html
 ```
 
-### 2. Install Dependencies
+## 🤖 Model yang Tersedia
 
-```bash
-pip install -r requirements.txt
-```
+| # | Model | Icon | Keterangan |
+|---|-------|------|------------|
+| 1 | 🎲 Auto (Best Free) | 🎲 | Auto-select model terbaik |
+| 2 | 🧠 Liquid Thinking | 🧠 | Reasoning model |
+| 3 | ⚡ Nemotron Nano | ⚡ | NVIDIA AI - Fast |
+| 4 | 💻 Qwen Coder | 💻 | Coding assistant |
+| 5 | 💎 Gemma 4 26B | 💎 | Google AI |
+| 6 | 🌟 MiniMax | 🌟 | MiniMax AI |
+| 7 | 🔵 DeepSeek V4 | 🔵 | DeepSeek AI |
+| 8 | 🏊 Poolside | 🏊 | Poolside AI |
 
-### 3. Jalankan
+## 📡 Free LLM API Resources
 
-```bash
-python app.py
-```
+LUMA-LAMMA menggunakan API gratis dari [free-llm-api-resources](https://github.com/cheahjs/free-llm-api-resources):
 
-### 4. Buka Browser
+| Provider | Limit | Models |
+|----------|-------|--------|
+| OpenRouter | 20 req/min, 50 req/day | 8 free models |
+| Groq | 14,400 req/day | Llama, Mixtral |
+| Google AI | 250K tokens/min | Gemini, Gemma |
+| Cerebras | 30 req/min, 1M tokens/hour | Llama 3.3 70B |
+| Cloudflare | 10,000 neurons/day | Llama, Qwen, Gemma |
 
-```
-http://localhost:5000
-```
+## 🎯 Penggunaan
 
-## 📡 Model yang Tersedia
-
-| Model | Parameter | Tipe |
-|-------|-----------|------|
-| **Mistral** ⭐ | 7B | General |
-| **Llama 3** | - | General |
-| **Llama 3.2** | - | General |
-| **Phi-3** | 3.8B | General |
-| **Qwen 2.5** | 7B | General |
-| **Gemma 2** | 2B | General |
-| **Code Llama** | 7B | Code |
-| **DeepSeek Coder** | 6.7B | Code |
-
-## 🔧 Install Model Tambahan
-
-```bash
-# Umum
-ollama pull llama3
-ollama pull phi3
-ollama pull qwen2.5
-ollama pull gemma2
-
-# Coding
-ollama pull codellama
-ollama pull deepseek-coder
-```
+1. **Buka** https://antono4.github.io/LUMA-LAMMA/
+2. **Pilih Model** - Klik model di sidebar kiri
+3. **Ketik Pesan** - Tulis pertanyaan Anda
+4. **Kirim** - Tekan Enter atau klik ➤
 
 ## 📁 Struktur Project
 
 ```
 LUMA-LAMMA/
-├── app.py              # Flask Backend API
-├── index.html          # Web Interface
-├── requirements.txt    # Python Dependencies
-├── .env                # Environment Config
+├── index.html          # Web Interface (single file)
 └── README.md           # Dokumentasi
 ```
 
-## 🎯 Penggunaan
+## 🔧 Setup Ollama (Optional - Local AI)
 
-1. **Pilih Model** - Klik dropdown di bagian atas
-2. **Ketik Pesan** - Tulis pertanyaan Anda
-3. **Kirim** - Tekan Enter atau klik Send
-4. **Clear Chat** - Klik tombol untuk reset percakapan
+Untuk AI offline tanpa internet:
 
-## 💡 Keunggulan
+```bash
+# Install Ollama
+# macOS/Linux
+curl -fsSL https://ollama.com/install.sh | sh
 
-| | Ollama |
-|--|--------|
-| 🌐 Internet | ❌ Tidak perlu |
-| 🔐 Privacy | ✅ 100% private |
-| 💳 Credit/Key | ❌ Tidak perlu |
-| 💸 Biaya | ✅ Gratis |
-| ⚡ Speed | ✅ Sangat cepat |
-| 📱 Offline | ✅ Bisa offline |
+# Windows: Download dari https://ollama.com
 
-## 📚 Sumber
+# Download model
+ollama pull llama3.2
 
-Model dari [Ollama Library](https://ollama.com/library)
+# Jalankan
+ollama serve
+```
+
+## 📚 Referensi
+
+- [Free LLM API Resources](https://github.com/cheahjs/free-llm-api-resources)
+- [OpenRouter](https://openrouter.ai)
+- [Ollama](https://ollama.com)
 
 ## 📜 License
 
-MIT License
+MIT License - Free untuk digunakan!
+
+---
+
+⭐ Star repo ini jika bermanfaat!
