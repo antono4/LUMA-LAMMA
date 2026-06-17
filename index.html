@@ -101,21 +101,14 @@
                     <div class="welcome-message" id="welcome-message">
                         <div class="welcome-icon">💬</div>
                         <h2>Welcome to LUMA-LAMMA</h2>
-                        <p>Free AI chat! Get an API key below to start.</p>
+                        <p>Free AI chat with OpenRouter! Enter your API key below.</p>
                         
                         <div class="api-section">
                             <h3>🔑 Get Free API Key</h3>
-                            <div class="api-links">
-                                <a href="https://console.groq.com/keys" target="_blank" class="api-link">📦 Groq (Fast & Free)</a>
-                                <a href="https://openrouter.ai/keys" target="_blank" class="api-link">🌐 OpenRouter (Many Free Models)</a>
-                            </div>
+                            <a href="https://openrouter.ai/keys" target="_blank" class="api-link">🌐 OpenRouter - Get Free Key</a>
                             
-                            <h3>Enter Your API Key</h3>
-                            <select class="api-select" id="provider-select">
-                                <option value="groq">Groq (gsk_...)</option>
-                                <option value="openrouter">OpenRouter (sk-or-...)</option>
-                            </select>
-                            <input type="password" class="api-input" id="api-key-input" placeholder="Paste your API key here...">
+                            <h3>Enter Your OpenRouter API Key</h3>
+                            <input type="password" class="api-input" id="api-key-input" placeholder="sk-or-v1-...">
                             <button class="api-btn" onclick="saveAPIKey()">Save & Start Chatting</button>
                         </div>
                         
@@ -139,55 +132,44 @@
             </section>
         </main>
         <footer class="footer">
-            Powered by <a href="https://groq.com" target="_blank">Groq</a> & <a href="https://openrouter.ai" target="_blank">OpenRouter</a> | <a href="https://github.com/antono4/LUMA-LAMMA" target="_blank">LUMA-LAMMA</a>
+            Powered by <a href="https://openrouter.ai" target="_blank">OpenRouter</a> | <a href="https://github.com/antono4/LUMA-LAMMA" target="_blank">LUMA-LAMMA</a>
         </footer>
     </div>
     <script>
-        const API_ENDPOINTS = {
-            groq: 'https://api.groq.com/openai/v1/chat/completions',
-            openrouter: 'https://openrouter.ai/api/v1/chat/completions'
-        };
+        const API_ENDPOINT = 'https://openrouter.ai/api/v1/chat/completions';
 
-        const MODELS = {
-            groq: [
-                { id: 'llama-3.3-70b-versatile', name: 'Llama 3.3 70B', icon: '🦙', desc: 'Best for coding' },
-                { id: 'llama-3.1-8b-instant', name: 'Llama 3.1 8B', icon: '🦙', desc: 'Fast & free' },
-                { id: 'mixtral-8x7b-32768', name: 'Mixtral 8x7B', icon: '🌪️', desc: 'Balanced' },
-                { id: 'gemma2-9b-it', name: 'Gemma 2 9B', icon: '💎', desc: 'Google AI' }
-            ],
-            openrouter: [
-                { id: 'google/gemma-2-9b-it:free', name: 'Gemma 2 9B', icon: '💎', desc: 'Free' },
-                { id: 'meta-llama/llama-3-8b-instruct:free', name: 'Llama 3 8B', icon: '🦙', desc: 'Free' },
-                { id: 'mistralai/mistral-7b-instruct:free', name: 'Mistral 7B', icon: '🌬️', desc: 'Free' }
-            ]
-        };
+        const MODELS = [
+            { id: 'openrouter/free', name: '🎲 Auto (Best Free)', icon: '🎲', desc: 'Auto-select best free model' },
+            { id: 'qwen/qwen3-coder:free', name: 'Qwen Coder', icon: '💻', desc: 'Coding assistant' },
+            { id: 'liquid/lfm-2.5-1.2b-thinking:free', name: 'Liquid Thinking', icon: '🧠', desc: 'Reasoning model' },
+            { id: 'cognitivecomputations/dolphin-mistral-24b-venice-edition:free', name: 'Dolphin Mistral', icon: '🐬', desc: 'Creative AI' },
+            { id: 'google/gemma-4-26b-a4b-it:free', name: 'Gemma 4 26B', icon: '💎', desc: 'Google AI' },
+            { id: 'nvidia/nemotron-nano-9b-v2:free', name: 'Nemotron Nano', icon: '⚡', desc: 'NVIDIA AI' }
+        ];
 
-        let selectedProvider = localStorage.getItem('provider') || 'groq';
-        let selectedModel = null;
+        let selectedModel = MODELS[0];
         let conversationHistory = [];
         let isLoading = false;
 
         function init() {
-            document.getElementById('provider-select').value = selectedProvider;
             renderModels();
         }
 
         function saveAPIKey() {
             const key = document.getElementById('api-key-input').value.trim();
-            if (key) {
+            if (key && key.startsWith('sk-or-v1-')) {
                 localStorage.setItem('api_key', key);
-                localStorage.setItem('provider', selectedProvider);
                 document.getElementById('welcome-message').style.display = 'none';
-                addMessage('assistant', 'API Key saved! You can now start chatting. Select a model from the sidebar.');
+                addMessage('assistant', '✅ API Key saved! Select a model and start chatting.');
+            } else {
+                alert('Please enter a valid OpenRouter API key (starts with sk-or-v1-)');
             }
         }
 
         function renderModels() {
             const list = document.getElementById('model-list');
             list.innerHTML = '';
-            const models = MODELS[selectedProvider] || MODELS.groq;
-            selectedModel = models[0];
-            models.forEach(model => {
+            MODELS.forEach(model => {
                 const isActive = model.id === selectedModel.id;
                 const item = document.createElement('div');
                 item.className = 'model-item' + (isActive ? ' active' : '');
@@ -196,11 +178,6 @@
                 list.appendChild(item);
             });
         }
-
-        document.getElementById('provider-select').onchange = function() {
-            selectedProvider = this.value;
-            renderModels();
-        };
 
         function selectModel(model) {
             selectedModel = model;
@@ -219,7 +196,7 @@
         }
 
         async function sendMessage() {
-            const apiKey = localStorage.getItem('api_key') || document.getElementById('api-key-input').value.trim();
+            const apiKey = localStorage.getItem('api_key');
             if (!apiKey) {
                 document.getElementById('api-key-input').focus();
                 return;
@@ -242,33 +219,31 @@
 
             try {
                 const messages = conversationHistory.map(m => ({ role: m.role, content: m.content }));
-                const endpoint = API_ENDPOINTS[selectedProvider] || API_ENDPOINTS.groq;
 
-                const headers = { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey };
-                if (selectedProvider === 'openrouter') {
-                    headers['HTTP-Referer'] = 'https://github.com/antono4/LUMA-LAMMA';
-                    headers['X-Title'] = 'LUMA-LAMMA';
-                }
-
-                const res = await fetch(endpoint, {
+                const res = await fetch(API_ENDPOINT, {
                     method: 'POST',
-                    headers: headers,
+                    headers: {
+                        'Authorization': 'Bearer ' + apiKey,
+                        'Content-Type': 'application/json',
+                        'HTTP-Referer': 'https://github.com/antono4/LUMA-LAMMA',
+                        'X-Title': 'LUMA-LAMMA'
+                    },
                     body: JSON.stringify({ model: selectedModel.id, messages: messages })
                 });
 
                 const data = await res.json();
 
                 if (res.status === 401 || res.status === 403) {
-                    addMessage('assistant', 'Invalid API Key. Please get a new key from Groq or OpenRouter.', true);
+                    addMessage('assistant', '❌ Invalid API Key. Please get a valid key from openrouter.ai/keys', true);
                 } else if (data.error) {
-                    addMessage('assistant', data.error.message || 'Error occurred', true);
+                    addMessage('assistant', '❌ ' + (data.error.message || 'Error occurred'), true);
                 } else {
                     const response = data.choices[0].message.content;
                     addMessage('assistant', response);
                     conversationHistory.push({ role: 'assistant', content: response });
                 }
             } catch (err) {
-                addMessage('assistant', 'Connection error. Check your internet connection.', true);
+                addMessage('assistant', '❌ Connection error. Check your internet.', true);
             } finally {
                 showTyping(false);
                 isLoading = false;
