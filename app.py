@@ -72,6 +72,8 @@ def get_available_models():
                 })
             return jsonify({"models": installed})
         return jsonify({"error": "Ollama not responding"}), 500
+    except requests.exceptions.ConnectionError:
+        return jsonify({"error": "Ollama is not running"}), 503
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -169,6 +171,8 @@ def chat():
         
     except requests.exceptions.Timeout:
         return jsonify({"error": "Request timeout, try a smaller model"}), 504
+    except requests.exceptions.ConnectionError:
+        return jsonify({"error": "Ollama is not running. Please install and start Ollama first."}), 503
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
