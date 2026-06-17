@@ -40,8 +40,9 @@
         .model-check { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--text-muted); }
         .model-item.active .model-check { background: var(--accent); border-color: var(--accent); }
         .chat-area { flex: 1; display: flex; flex-direction: column; max-width: 900px; margin: 0 auto; width: 100%; padding: 20px; }
-        .chat-messages { flex: 1; overflow-y: auto; padding-bottom: 20px; }
-        .welcome-message { text-align: center; padding: 60px 20px; }
+        .chat-frame { flex: 1; display: flex; flex-direction: column; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; max-height: calc(100vh - 200px); }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 20px; min-height: 0; }
+        .welcome-message { text-align: center; padding: 60px 20px; flex: 1; display: flex; flex-direction: column; justify-content: center; }
         .welcome-icon { font-size: 64px; margin-bottom: 20px; }
         .welcome-message h2 { font-size: 28px; margin-bottom: 12px; }
         .welcome-message p { color: var(--text-secondary); max-width: 500px; margin: 0 auto 24px; }
@@ -87,27 +88,29 @@
                 <div class="model-list" id="model-list"></div>
             </aside>
             <section class="chat-area">
-                <div class="chat-messages" id="chat-messages">
-                    <div class="welcome-message" id="welcome-message">
-                        <div class="welcome-icon">🤖</div>
-                        <h2>Welcome to LUMA-LAMMA</h2>
-                        <p>Free AI chat powered by OpenRouter! Just select a model and start chatting.</p>
-                        <div class="quick-actions">
-                            <button class="quick-btn" onclick="sendSuggestion('Hello!')">👋 Hello</button>
-                            <button class="quick-btn" onclick="sendSuggestion('Explain quantum computing')">🔬 Explain</button>
-                            <button class="quick-btn" onclick="sendSuggestion('Write Python hello world')">💻 Code</button>
-                            <button class="quick-btn" onclick="sendSuggestion('What is machine learning?')">🤖 ML</button>
+                <div class="chat-frame">
+                    <div class="chat-messages" id="chat-messages">
+                        <div class="welcome-message" id="welcome-message">
+                            <div class="welcome-icon">🤖</div>
+                            <h2>Welcome to LUMA-LAMMA</h2>
+                            <p>Free AI chat powered by OpenRouter! Just select a model and start chatting.</p>
+                            <div class="quick-actions">
+                                <button class="quick-btn" onclick="sendSuggestion('Hello!')">👋 Hello</button>
+                                <button class="quick-btn" onclick="sendSuggestion('Explain quantum computing')">🔬 Explain</button>
+                                <button class="quick-btn" onclick="sendSuggestion('Write Python hello world')">💻 Code</button>
+                                <button class="quick-btn" onclick="sendSuggestion('What is machine learning?')">🤖 ML</button>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="typing-indicator" id="typing-indicator">
-                    <div class="message-avatar">🤖</div>
-                    <div class="typing-dots"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>
-                </div>
-                <div class="chat-input-container">
-                    <div class="chat-input-wrapper">
-                        <textarea class="chat-input" id="chat-input" placeholder="Type your message..." rows="1" onkeydown="handleKeyDown(event)" oninput="autoResize(this)"></textarea>
-                        <button class="send-btn" id="send-btn" onclick="sendMessage()">➤</button>
+                    <div class="typing-indicator" id="typing-indicator">
+                        <div class="message-avatar">🤖</div>
+                        <div class="typing-dots"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>
+                    </div>
+                    <div class="chat-input-container">
+                        <div class="chat-input-wrapper">
+                            <textarea class="chat-input" id="chat-input" placeholder="Type your message..." rows="1" onkeydown="handleKeyDown(event)" oninput="autoResize(this)"></textarea>
+                            <button class="send-btn" id="send-btn" onclick="sendMessage()">➤</button>
+                        </div>
                     </div>
                 </div>
             </section>
