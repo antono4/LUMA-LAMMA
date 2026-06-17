@@ -29,6 +29,11 @@
         .main { display: flex; flex: 1; }
         .sidebar { width: 280px; background: var(--bg-secondary); border-right: 1px solid var(--border); padding: 20px; }
         .sidebar-title { font-size: 12px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; letter-spacing: 1px; }
+        .provider-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+        .provider-tab { flex: 1; padding: 10px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-secondary); cursor: pointer; font-size: 13px; transition: all 0.2s; }
+        .provider-tab:hover { background: rgba(99, 102, 241, 0.1); }
+        .provider-tab.active { background: var(--accent); color: white; border-color: var(--accent); }
+        .ollama-info { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; padding: 8px; background: var(--bg-tertiary); border-radius: 8px; }
         .model-list { display: flex; flex-direction: column; gap: 8px; }
         .model-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-tertiary); border-radius: 10px; cursor: pointer; transition: all 0.2s; }
         .model-item:hover { background: rgba(99, 102, 241, 0.1); }
@@ -84,6 +89,9 @@
         </header>
         <main class="main">
             <aside class="sidebar">
+                <div class="sidebar-title">Select Provider</div>
+                <div id="provider-tabs"></div>
+                <div class="ollama-info" id="ollama-status">Checking Ollama...</div>
                 <div class="sidebar-title">Select Model</div>
                 <div class="model-list" id="model-list"></div>
             </aside>
@@ -122,27 +130,95 @@
     <script>
         // API Key (base64 encoded)
         const _0x = atob('c2stb3ItdjEtYTIyZDczZWZhZTY1OWFlYzA4NjUyZDg2MjBiMWJkZTM1OTc0ZDVhOTE2ZWUzNjMzZDkyNjIwM2I3MDlhZDhmNA==');
-        const API_ENDPOINT = 'https://openrouter.ai/api/v1/chat/completions';
+        
+        // Provider Configuration
+        let currentProvider = 'openrouter';
+        const OLLAMA_ENDPOINT = 'http://localhost:11434/api/chat';
+        
+        const PROVIDERS = {
+            openrouter: {
+                endpoint: 'https://openrouter.ai/api/v1/chat/completions',
+                models: [
+                    { id: 'openrouter/free', name: '🎲 Auto (Best Free)', icon: '🎲', desc: 'Auto-select best model' },
+                    { id: 'liquid/lfm-2.5-1.2b-thinking:free', name: '🧠 Liquid Thinking', icon: '🧠', desc: 'Reasoning model' },
+                    { id: 'nvidia/nemotron-nano-9b-v2:free', name: '⚡ Nemotron Nano', icon: '⚡', desc: 'NVIDIA AI' }
+                ],
+                headers: { 'Content-Type': 'application/json', 'HTTP-Referer': 'https://github.com/antono4/LUMA-LAMMA', 'X-Title': 'LUMA-LAMMA' }
+            },
+            ollama: {
+                models: [
+                    { id: 'llama3.2', name: '🦙 Llama 3.2', icon: '🦙', desc: 'General purpose' },
+                    { id: 'llama3.1', name: '🦙 Llama 3.1', icon: '🦙', desc: 'General purpose' },
+                    { id: 'mistral', name: '🌬️ Mistral', icon: '🌬️', desc: 'Fast & capable' },
+                    { id: 'codellama', name: '💻 Code Llama', icon: '💻', desc: 'Coding assistant' },
+                    { id: 'qwen2.5-coder', name: '🔧 Qwen Coder', icon: '🔧', desc: 'Coding specialist' },
+                    { id: 'phi3', name: '📦 Phi-3', icon: '📦', desc: 'Small & fast' },
+                    { id: 'deepseek-r1', name: '🧠 DeepSeek R1', icon: '🧠', desc: 'Reasoning model' },
+                    { id: 'gemma2', name: '💎 Gemma 2', icon: '💎', desc: 'Google AI' }
+                ]
+            }
+        };
 
-        const MODELS = [
-            { id: 'openrouter/free', name: '🎲 Auto (Best Free)', icon: '🎲', desc: 'Auto-select best model' },
-            { id: 'qwen/qwen3-coder:free', name: 'Qwen Coder', icon: '💻', desc: 'Coding assistant' },
-            { id: 'liquid/lfm-2.5-1.2b-thinking:free', name: 'Liquid Thinking', icon: '🧠', desc: 'Reasoning model' },
-            { id: 'cognitivecomputations/dolphin-mistral-24b-venice-edition:free', name: 'Dolphin Mistral', icon: '🐬', desc: 'Creative AI' },
-            { id: 'google/gemma-4-26b-a4b-it:free', name: 'Gemma 4 26B', icon: '💎', desc: 'Google AI' },
-            { id: 'nvidia/nemotron-nano-9b-v2:free', name: 'Nemotron Nano', icon: '⚡', desc: 'NVIDIA AI' }
-        ];
-
-        let selectedModel = MODELS[0];
+        let selectedModel = PROVIDERS.openrouter.models[0];
         let conversationHistory = [];
         let isLoading = false;
 
-        function init() { renderModels(); }
+        function init() { 
+            renderProviders(); 
+            renderModels(); 
+            checkOllamaStatus();
+        }
+
+        function renderProviders() {
+            const container = document.getElementById('provider-tabs');
+            if (!container) return;
+            container.innerHTML = `
+                <button class="provider-tab ${currentProvider === 'openrouter' ? 'active' : ''}" onclick="switchProvider('openrouter')">☁️ OpenRouter</button>
+                <button class="provider-tab ${currentProvider === 'ollama' ? 'active' : ''}" onclick="switchProvider('ollama')">💻 Ollama (Local)</button>
+            `;
+        }
+
+        async function checkOllamaStatus() {
+            try {
+                const res = await fetch('http://localhost:11434/api/tags', { method: 'GET' });
+                if (res.ok) {
+                    const data = await res.json();
+                    const ollamaModels = data.models.map(m => ({
+                        id: m.name,
+                        name: '🦙 ' + m.name,
+                        icon: '🦙',
+                        desc: (m.size / 1e9).toFixed(1) + ' GB'
+                    }));
+                    PROVIDERS.ollama.models = ollamaModels.length > 0 ? ollamaModels : PROVIDERS.ollama.models;
+                    document.getElementById('ollama-status').innerHTML = '<span style="color:var(--success)">●</span> Ollama Connected';
+                }
+            } catch (e) {
+                document.getElementById('ollama-status').innerHTML = '<span style="color:var(--error)">○</span> Ollama Offline <a href="https://ollama.com" target="_blank" style="color:var(--accent-light)">(Install)</a>';
+            }
+        }
+
+        function switchProvider(provider) {
+            currentProvider = provider;
+            selectedModel = PROVIDERS[provider].models[0];
+            renderProviders();
+            renderModels();
+            renderStatus();
+        }
+
+        function renderStatus() {
+            const status = document.querySelector('.status-badge');
+            if (currentProvider === 'ollama') {
+                status.innerHTML = '<span style="color:var(--accent)">●</span> Ollama Mode';
+            } else {
+                status.innerHTML = '<span style="color:var(--success)">●</span> Connected - Ready';
+            }
+        }
 
         function renderModels() {
             const list = document.getElementById('model-list');
             list.innerHTML = '';
-            MODELS.forEach(model => {
+            const models = PROVIDERS[currentProvider].models;
+            models.forEach(model => {
                 const isActive = model.id === selectedModel.id;
                 const item = document.createElement('div');
                 item.className = 'model-item' + (isActive ? ' active' : '');
@@ -168,16 +244,36 @@
             document.getElementById('send-btn').disabled = true;
             try {
                 const messages = conversationHistory.map(m => ({ role: m.role, content: m.content }));
-                const res = await fetch(API_ENDPOINT, {
-                    method: 'POST',
-                    headers: { 'Authorization': 'Bearer ' + _0x, 'Content-Type': 'application/json', 'HTTP-Referer': 'https://github.com/antono4/LUMA-LAMMA', 'X-Title': 'LUMA-LAMMA' },
-                    body: JSON.stringify({ model: selectedModel.id, messages: messages })
-                });
-                const data = await res.json();
-                if (res.status === 401 || res.status === 403) { addMessage('assistant', '❌ Invalid API Key.', true); }
-                else if (data.error) { addMessage('assistant', '❌ ' + (data.error.message || 'Error'), true); }
-                else { const response = data.choices[0].message.content; addMessage('assistant', response); conversationHistory.push({ role: 'assistant', content: response }); }
-            } catch (err) { addMessage('assistant', '❌ Connection error.', true); }
+                
+                let res, data;
+                if (currentProvider === 'ollama') {
+                    res = await fetch(OLLAMA_ENDPOINT, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ model: selectedModel.id, messages: messages, stream: false })
+                    });
+                    data = await res.json();
+                    if (data.error) {
+                        addMessage('assistant', '❌ ' + data.error, true);
+                    } else {
+                        const response = data.message.content;
+                        addMessage('assistant', response);
+                        conversationHistory.push({ role: 'assistant', content: response });
+                    }
+                } else {
+                    res = await fetch(PROVIDERS.openrouter.endpoint, {
+                        method: 'POST',
+                        headers: { 'Authorization': 'Bearer ' + _0x, ...PROVIDERS.openrouter.headers },
+                        body: JSON.stringify({ model: selectedModel.id, messages: messages })
+                    });
+                    data = await res.json();
+                    if (res.status === 401 || res.status === 403) { addMessage('assistant', '❌ Invalid API Key.', true); }
+                    else if (data.error) { addMessage('assistant', '❌ ' + (data.error.message || 'Error'), true); }
+                    else { const response = data.choices[0].message.content; addMessage('assistant', response); conversationHistory.push({ role: 'assistant', content: response }); }
+                }
+            } catch (err) { 
+                addMessage('assistant', '❌ Connection error. ' + (currentProvider === 'ollama' ? 'Make sure Ollama is running on localhost:11434' : 'Check your internet.'), true); 
+            }
             finally { showTyping(false); isLoading = false; document.getElementById('send-btn').disabled = false; }
         }
 
