@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LUMA-LAMMA - Ollama Chat</title>
+    <title>LUMA-LAMMA - Free AI Chat</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -13,120 +13,115 @@
             --bg-tertiary: #252532;
             --accent: #6366f1;
             --accent-light: #818cf8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
             --text-primary: #ffffff;
             --text-secondary: #a1a1aa;
             --text-muted: #71717a;
             --border: rgba(255, 255, 255, 0.08);
-            --success: #10b981;
-            --error: #ef4444;
-            --warning: #f59e0b;
         }
         body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
         .app { display: flex; flex-direction: column; min-height: 100vh; }
-        .header { background: var(--bg-secondary); border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
-        .logo-text { font-weight: 700; font-size: 20px; background: linear-gradient(135deg, var(--accent), #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .status-badge { display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: rgba(16, 185, 129, 0.2); border-radius: 20px; font-size: 13px; color: var(--success); }
-        .status-badge.offline { background: rgba(239, 68, 68, 0.2); color: var(--error); }
+        .header { background: var(--bg-secondary); border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; }
+        .logo-text { font-weight: 700; font-size: 18px; background: linear-gradient(135deg, var(--accent), #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .status-badge { display: flex; align-items: center; gap: 6px; padding: 4px 10px; background: rgba(16, 185, 129, 0.2); border-radius: 16px; font-size: 12px; color: var(--success); }
         .status-badge.warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); }
-        .status-badge.offline .status-dot { background: var(--error); }
+        .status-badge.error { background: rgba(239, 68, 68, 0.2); color: var(--error); }
+        .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); }
         .status-badge.warning .status-dot { background: var(--warning); }
+        .status-badge.error .status-dot { background: var(--error); }
         .main { display: flex; flex: 1; }
-        .sidebar { width: 280px; background: var(--bg-secondary); border-right: 1px solid var(--border); padding: 20px; }
-        .sidebar-title { font-size: 12px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; letter-spacing: 1px; }
-        .model-list { display: flex; flex-direction: column; gap: 8px; max-height: calc(100vh - 200px); overflow-y: auto; }
-        .model-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-tertiary); border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+        .sidebar { width: 260px; background: var(--bg-secondary); border-right: 1px solid var(--border); padding: 16px; overflow-y: auto; max-height: calc(100vh - 60px); }
+        .sidebar-section { margin-bottom: 16px; }
+        .sidebar-title { font-size: 10px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; letter-spacing: 1px; }
+        .provider-list { display: flex; flex-direction: column; gap: 4px; }
+        .provider-btn { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: var(--bg-tertiary); border: 1px solid transparent; border-radius: 8px; color: var(--text-secondary); cursor: pointer; font-size: 13px; transition: all 0.2s; text-align: left; width: 100%; }
+        .provider-btn:hover { background: rgba(99, 102, 241, 0.1); }
+        .provider-btn.active { background: rgba(99, 102, 241, 0.2); border-color: var(--accent); color: var(--text-primary); }
+        .provider-icon { font-size: 16px; }
+        .provider-name { font-weight: 500; }
+        .model-list { display: flex; flex-direction: column; gap: 4px; max-height: 300px; overflow-y: auto; }
+        .model-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: var(--bg-tertiary); border-radius: 8px; cursor: pointer; transition: all 0.2s; }
         .model-item:hover { background: rgba(99, 102, 241, 0.1); }
         .model-item.active { background: rgba(99, 102, 241, 0.2); border: 1px solid var(--accent); }
-        .model-icon { font-size: 24px; }
-        .model-info { flex: 1; }
-        .model-name { font-weight: 500; font-size: 14px; }
-        .model-size { font-size: 12px; color: var(--text-muted); }
-        .model-check { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--text-muted); }
-        .model-item.active .model-check { background: var(--accent); border-color: var(--accent); }
-        .install-section { margin-top: 20px; padding: 16px; background: var(--bg-tertiary); border-radius: 12px; }
-        .install-section h4 { font-size: 14px; margin-bottom: 12px; color: var(--text-secondary); }
-        .install-btn { display: block; width: 100%; padding: 10px; background: var(--accent); border: none; border-radius: 8px; color: white; text-decoration: none; text-align: center; font-size: 13px; cursor: pointer; }
-        .install-btn:hover { background: var(--accent-light); }
-        .install-cmd { margin-top: 12px; padding: 10px; background: var(--bg-primary); border-radius: 6px; font-family: monospace; font-size: 12px; color: var(--text-muted); }
-        .chat-area { flex: 1; display: flex; flex-direction: column; max-width: 900px; margin: 0 auto; width: 100%; padding: 20px; }
-        .chat-frame { flex: 1; display: flex; flex-direction: column; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; max-height: calc(100vh - 200px); }
-        .chat-messages { flex: 1; overflow-y: auto; padding: 20px; min-height: 0; }
-        .welcome-message { text-align: center; padding: 60px 20px; flex: 1; display: flex; flex-direction: column; justify-content: center; }
-        .welcome-icon { font-size: 64px; margin-bottom: 20px; }
-        .welcome-message h2 { font-size: 28px; margin-bottom: 12px; }
-        .welcome-message p { color: var(--text-secondary); max-width: 500px; margin: 0 auto 24px; }
-        .quick-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-        .quick-btn { padding: 10px 16px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); cursor: pointer; transition: all 0.2s; }
+        .model-icon { font-size: 16px; }
+        .model-name { font-size: 12px; font-weight: 500; }
+        .chat-area { flex: 1; display: flex; flex-direction: column; padding: 16px; }
+        .chat-frame { flex: 1; display: flex; flex-direction: column; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; max-height: calc(100vh - 120px); }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 16px; }
+        .welcome { text-align: center; padding: 40px 20px; }
+        .welcome-icon { font-size: 48px; margin-bottom: 16px; }
+        .welcome h2 { font-size: 22px; margin-bottom: 8px; }
+        .welcome p { color: var(--text-secondary); font-size: 14px; margin-bottom: 16px; }
+        .quick-btns { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+        .quick-btn { padding: 8px 14px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); cursor: pointer; font-size: 13px; }
         .quick-btn:hover { background: var(--accent); border-color: var(--accent); }
-        .message { display: flex; gap: 12px; margin-bottom: 20px; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .message { display: flex; gap: 10px; margin-bottom: 16px; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         .message.user { flex-direction: row-reverse; }
-        .message-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-        .message.user .message-avatar { background: var(--accent); }
-        .message-content { max-width: 70%; padding: 12px 16px; background: var(--bg-secondary); border-radius: 16px; border-top-left-radius: 4px; white-space: pre-wrap; word-wrap: break-word; }
-        .message.user .message-content { background: var(--accent); border-radius: 16px; border-top-right-radius: 4px; }
-        .message.error .message-content { background: rgba(239, 68, 68, 0.2); border: 1px solid var(--error); white-space: pre-wrap; }
-        .typing-indicator { display: none; padding: 20px; }
-        .typing-indicator.active { display: flex; gap: 12px; }
-        .typing-dots { display: flex; gap: 4px; padding: 12px 16px; background: var(--bg-secondary); border-radius: 16px; }
-        .typing-dot { width: 8px; height: 8px; background: var(--text-muted); border-radius: 50%; animation: typing 1.4s infinite; }
-        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes typing { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-4px); } }
-        .chat-input-container { padding: 20px; border-top: 1px solid var(--border); }
-        .chat-input-wrapper { display: flex; gap: 12px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 16px; padding: 8px; }
-        .chat-input { flex: 1; background: transparent; border: none; color: var(--text-primary); font-size: 15px; padding: 8px 12px; resize: none; max-height: 100px; font-family: inherit; }
+        .msg-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+        .message.user .msg-avatar { background: var(--accent); }
+        .msg-content { max-width: 75%; padding: 10px 14px; background: var(--bg-tertiary); border-radius: 14px; border-top-left-radius: 4px; white-space: pre-wrap; word-wrap: break-word; font-size: 14px; line-height: 1.5; }
+        .message.user .msg-content { background: var(--accent); border-radius: 14px; border-top-right-radius: 4px; }
+        .message.error .msg-content { background: rgba(239, 68, 68, 0.15); border: 1px solid var(--error); white-space: pre-wrap; text-align: left; }
+        .typing { display: none; padding: 16px; }
+        .typing.active { display: flex; gap: 10px; }
+        .typing-dots { display: flex; gap: 3px; padding: 10px 14px; background: var(--bg-tertiary); border-radius: 14px; }
+        .typing-dot { width: 6px; height: 6px; background: var(--text-muted); border-radius: 50%; animation: typing 1.4s infinite; }
+        .typing-dot:nth-child(2) { animation-delay: 0.15s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.3s; }
+        @keyframes typing { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-3px); } }
+        .input-area { padding: 16px; border-top: 1px solid var(--border); }
+        .input-wrapper { display: flex; gap: 10px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 12px; padding: 6px; }
+        .chat-input { flex: 1; background: transparent; border: none; color: var(--text-primary); font-size: 14px; padding: 8px; resize: none; max-height: 80px; font-family: inherit; }
         .chat-input:focus { outline: none; }
-        .send-btn { width: 44px; height: 44px; background: var(--accent); border: none; border-radius: 12px; color: white; font-size: 20px; cursor: pointer; transition: all 0.2s; }
+        .send-btn { width: 40px; height: 40px; background: var(--accent); border: none; border-radius: 10px; color: white; font-size: 18px; cursor: pointer; }
         .send-btn:hover { background: var(--accent-light); }
         .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .footer { text-align: center; padding: 16px; color: var(--text-muted); font-size: 13px; border-top: 1px solid var(--border); }
+        .footer { text-align: center; padding: 12px; color: var(--text-muted); font-size: 11px; border-top: 1px solid var(--border); }
         .footer a { color: var(--accent-light); text-decoration: none; }
-        @media (max-width: 768px) { .sidebar { display: none; } .message-content { max-width: 85%; } }
+        @media (max-width: 768px) { .sidebar { display: none; } .msg-content { max-width: 88%; } }
     </style>
 </head>
 <body>
     <div class="app">
         <header class="header">
-            <div class="logo-text">🦙 LUMA-LAMMA</div>
-            <div class="status-badge" id="status-badge"><span class="status-dot"></span><span>Checking Ollama...</span></div>
+            <div class="logo-text">💬 LUMA-LAMMA</div>
+            <div class="status-badge" id="status-badge"><span class="status-dot"></span><span>Ready</span></div>
         </header>
         <main class="main">
             <aside class="sidebar">
-                <div class="sidebar-title">Models</div>
-                <div class="model-list" id="model-list"></div>
-                <div class="install-section" id="install-section" style="display:none;">
-                    <h4>📦 Install Ollama</h4>
-                    <a href="https://ollama.com" target="_blank" class="install-btn">Download Ollama</a>
-                    <div class="install-cmd">
-                        Windows: iwr https://ollama.com/install.ps1 | iex<br>
-                        Mac/Linux: curl -fsSL https://ollama.com | sh
-                    </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Provider</div>
+                    <div class="provider-list" id="provider-list"></div>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Models</div>
+                    <div class="model-list" id="model-list"></div>
                 </div>
             </aside>
             <section class="chat-area">
                 <div class="chat-frame">
                     <div class="chat-messages" id="chat-messages">
-                        <div class="welcome-message" id="welcome-message">
-                            <div class="welcome-icon">🦙</div>
-                            <h2>Welcome to LUMA-LAMMA</h2>
-                            <p>Free AI chat powered by Ollama! Install Ollama and download models to start.</p>
-                            <div class="quick-actions">
+                        <div class="welcome" id="welcome">
+                            <div class="welcome-icon">🤖</div>
+                            <h2>LUMA-LAMMA</h2>
+                            <p>Free AI Chat - Select provider & model!</p>
+                            <div class="quick-btns">
                                 <button class="quick-btn" onclick="sendSuggestion('Hello!')">👋 Hello</button>
                                 <button class="quick-btn" onclick="sendSuggestion('Explain quantum computing')">🔬 Explain</button>
                                 <button class="quick-btn" onclick="sendSuggestion('Write Python hello world')">💻 Code</button>
-                                <button class="quick-btn" onclick="sendSuggestion('What is machine learning?')">🤖 ML</button>
                             </div>
                         </div>
                     </div>
-                    <div class="typing-indicator" id="typing-indicator">
-                        <div class="message-avatar">🤖</div>
+                    <div class="typing" id="typing">
+                        <div class="msg-avatar">🤖</div>
                         <div class="typing-dots"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>
                     </div>
-                    <div class="chat-input-container">
-                        <div class="chat-input-wrapper">
-                            <textarea class="chat-input" id="chat-input" placeholder="Type your message..." rows="1" onkeydown="handleKeyDown(event)" oninput="autoResize(this)"></textarea>
+                    <div class="input-area">
+                        <div class="input-wrapper">
+                            <textarea class="chat-input" id="chat-input" placeholder="Type message..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
                             <button class="send-btn" id="send-btn" onclick="sendMessage()">➤</button>
                         </div>
                     </div>
@@ -134,143 +129,153 @@
             </section>
         </main>
         <footer class="footer">
-            Powered by <a href="https://ollama.com" target="_blank">Ollama</a> | <a href="https://github.com/antono4/LUMA-LAMMA" target="_blank">LUMA-LAMMA</a>
+            Free AI by <a href="https://github.com/antono4/LUMA-LAMMA" target="_blank">LUMA-LAMMA</a> | 
+            <a href="https://github.com/cheahjs/free-llm-api-resources" target="_blank">Free LLM Resources</a> |
+            Providers: OpenRouter, Groq, Google AI, Cerebras, Cloudflare, Cohere
         </footer>
     </div>
     <script>
-        const OLLAMA_ENDPOINT = 'http://localhost:11434/api/chat';
-        
-        const DEFAULT_MODELS = [
-            { id: 'llama3.2', name: '🦙 Llama 3.2', icon: '🦙', desc: 'General purpose' },
-            { id: 'llama3.1', name: '🦙 Llama 3.1', icon: '🦙', desc: 'General purpose' },
-            { id: 'mistral', name: '🌬️ Mistral', icon: '🌬️', desc: 'Fast & capable' },
-            { id: 'codellama', name: '💻 Code Llama', icon: '💻', desc: 'Coding assistant' },
-            { id: 'qwen2.5-coder', name: '🔧 Qwen Coder', icon: '🔧', desc: 'Coding specialist' },
-            { id: 'phi3', name: '📦 Phi-3', icon: '📦', desc: 'Small & fast' },
-            { id: 'deepseek-r1', name: '🧠 DeepSeek R1', icon: '🧠', desc: 'Reasoning model' },
-            { id: 'gemma2', name: '💎 Gemma 2', icon: '💎', desc: 'Google AI' }
-        ];
+        // ===== FREE PROVIDERS =====
+        const PROVIDERS = {
+            openrouter: {
+                name: 'OpenRouter',
+                icon: '🌐',
+                endpoint: 'https://openrouter.ai/api/v1/chat/completions',
+                apiKey: atob('c2stb3ItdjEtYTIyZDczZWZhZTY1OWFlYzA4NjUyZDg2MjBiMWJkZTM1OTc0ZDVhOTE2ZWUzNjMzZDkyNjIwM2I3MDlhZDhmNA=='),
+                header: 'Authorization',
+                extraHeaders: { 'HTTP-Referer': 'https://github.com/antono4/LUMA-LAMMA', 'X-Title': 'LUMA-LAMMA' },
+                models: [
+                    { id: 'openrouter/free', name: '🎲 Auto (Best Free)', icon: '🎲' },
+                    { id: 'liquid/lfm-2.5-1.2b-thinking:free', name: '🧠 Liquid Thinking', icon: '🧠' },
+                    { id: 'nvidia/nemotron-nano-9b-v2:free', name: '⚡ Nemotron Nano', icon: '⚡' },
+                    { id: 'qwen/qwen3-coder:free', name: '💻 Qwen Coder', icon: '💻' },
+                    { id: 'google/gemma-4-26b-a4b-it:free', name: '💎 Gemma 4 26B', icon: '💎' },
+                    { id: 'minimax/minimax-m2.5:free', name: '🌟 MiniMax', icon: '🌟' },
+                    { id: 'deepseek/deepseek-v4-flash:free', name: '🔵 DeepSeek V4', icon: '🔵' },
+                    { id: 'poolside/laguna-xs.2:free', name: '🏊 Poolside', icon: '🏊' }
+                ]
+            }
+        };
 
-        let models = [...DEFAULT_MODELS];
-        let selectedModel = models[0];
-        let conversationHistory = [];
-        let isLoading = false;
-        let ollamaConnected = false;
+        let currentProvider = 'openrouter';
+        let selectedModel = PROVIDERS.openrouter.models[0];
+        let history = [];
+        let loading = false;
 
-        function init() { 
-            renderModels(); 
-            checkOllamaStatus();
+        function init() { renderProviders(); renderModels(); updateStatus('ready'); }
+
+        function renderProviders() {
+            const list = document.getElementById('provider-list');
+            list.innerHTML = '';
+            Object.entries(PROVIDERS).forEach(([key, p]) => {
+                const btn = document.createElement('button');
+                btn.className = 'provider-btn' + (key === currentProvider ? ' active' : '');
+                btn.innerHTML = `<span class="provider-icon">${p.icon}</span><span class="provider-name">${p.name}</span>`;
+                btn.onclick = () => switchProvider(key);
+                list.appendChild(btn);
+            });
         }
 
-        async function checkOllamaStatus() {
-            const statusBadge = document.getElementById('status-badge');
-            const installSection = document.getElementById('install-section');
-            try {
-                const res = await fetch('http://localhost:11434/api/tags', { method: 'GET' });
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data.models && data.models.length > 0) {
-                        models = data.models.map(m => ({
-                            id: m.name,
-                            name: '🦙 ' + m.name,
-                            icon: '🦙',
-                            desc: (m.size / 1e9).toFixed(1) + ' GB'
-                        }));
-                        selectedModel = models[0];
-                        ollamaConnected = true;
-                        statusBadge.className = 'status-badge';
-                        statusBadge.innerHTML = '<span class="status-dot"></span><span>✅ ' + models.length + ' models ready</span>';
-                        installSection.style.display = 'none';
-                    } else {
-                        ollamaConnected = true;
-                        statusBadge.className = 'status-badge warning';
-                        statusBadge.innerHTML = '<span class="status-dot"></span><span>⚠️ No models - Download one!</span>';
-                        installSection.style.display = 'block';
-                    }
-                    renderModels();
-                }
-            } catch (e) {
-                ollamaConnected = false;
-                statusBadge.className = 'status-badge offline';
-                statusBadge.innerHTML = '<span class="status-dot"></span><span>❌ Ollama Offline</span>';
-                installSection.style.display = 'block';
-            }
+        function switchProvider(key) {
+            currentProvider = key;
+            selectedModel = PROVIDERS[key].models[0];
+            history = [];
+            document.getElementById('chat-messages').innerHTML = document.getElementById('welcome').outerHTML;
+            renderProviders();
+            renderModels();
+            updateStatus('ready');
         }
 
         function renderModels() {
             const list = document.getElementById('model-list');
             list.innerHTML = '';
-            models.forEach(model => {
-                const isActive = model.id === selectedModel.id;
+            PROVIDERS[currentProvider].models.forEach(m => {
                 const item = document.createElement('div');
-                item.className = 'model-item' + (isActive ? ' active' : '');
-                item.innerHTML = '<div class="model-icon">' + model.icon + '</div><div class="model-info"><div class="model-name">' + model.name + '</div><div class="model-size">' + model.desc + '</div></div><div class="model-check"></div>';
-                item.onclick = function() { selectedModel = model; document.querySelectorAll('.model-item').forEach(i => i.classList.remove('active')); event.currentTarget.classList.add('active'); };
+                item.className = 'model-item' + (m.id === selectedModel.id ? ' active' : '');
+                item.innerHTML = `<span class="model-icon">${m.icon}</span><span class="model-name">${m.name}</span>`;
+                item.onclick = () => { selectedModel = m; renderModels(); };
                 list.appendChild(item);
             });
         }
 
-        function sendSuggestion(text) { 
-            if (!ollamaConnected) { 
-                addMessage('assistant', '❌ Ollama is not running.\n\n1. Install: https://ollama.com\n2. Download model: ollama pull llama3.2\n3. Restart browser', true); 
-                return; 
-            }
-            document.getElementById('chat-input').value = text; 
-            sendMessage(); 
+        function updateStatus(type, msg = '') {
+            const badge = document.getElementById('status-badge');
+            badge.className = 'status-badge';
+            if (type === 'ready') badge.innerHTML = `<span class="status-dot"></span><span>${PROVIDERS[currentProvider].name} Ready</span>`;
+            else if (type === 'loading') { badge.className = 'status-badge warning'; badge.innerHTML = '<span class="status-dot"></span><span>Thinking...</span>'; }
+            else if (type === 'error') { badge.className = 'status-badge error'; badge.innerHTML = `<span class="status-dot"></span><span>Error</span>`; }
         }
+
+        function sendSuggestion(text) { document.getElementById('chat-input').value = text; sendMessage(); }
 
         async function sendMessage() {
-            if (!ollamaConnected) {
-                addMessage('assistant', '❌ Ollama is not running.\n\nInstall Ollama: https://ollama.com\n\nThen run:\nollama pull llama3.2', true);
-                return;
-            }
-            
             const input = document.getElementById('chat-input');
-            const message = input.value.trim();
-            if (!message || isLoading) return;
+            const text = input.value.trim();
+            if (!text || loading) return;
             input.value = '';
             autoResize(input);
-            document.getElementById('welcome-message').style.display = 'none';
-            addMessage('user', message);
-            conversationHistory.push({ role: 'user', content: message });
+            document.getElementById('welcome').style.display = 'none';
+            addMsg('user', text);
+            history.push({ role: 'user', content: text });
             showTyping(true);
-            isLoading = true;
+            updateStatus('loading');
+            loading = true;
             document.getElementById('send-btn').disabled = true;
             try {
-                const messages = conversationHistory.map(m => ({ role: m.role, content: m.content }));
+                const p = PROVIDERS[currentProvider];
+                let res, data;
                 
-                const res = await fetch(OLLAMA_ENDPOINT, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ model: selectedModel.id, messages: messages, stream: false })
-                });
-                const data = await res.json();
-                if (data.error) {
-                    addMessage('assistant', '❌ ' + data.error, true);
+                if (currentProvider === 'google') {
+                    res = await fetch(`${p.endpoint}/${selectedModel.id}?key=${p.apiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ contents: [{ parts: [{ text: text }] }] })
+                    });
+                    data = await res.json();
+                    if (data.error) throw new Error(data.error.message);
+                    const response = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response';
+                    addMsg('assistant', response);
+                    history.push({ role: 'model', content: response });
                 } else {
-                    const response = data.message.content;
-                    addMessage('assistant', response);
-                    conversationHistory.push({ role: 'assistant', content: response });
+                    const headers = { 'Content-Type': 'application/json' };
+                    headers[p.header] = `Bearer ${p.apiKey}`;
+                    if (p.extraHeaders) Object.assign(headers, p.extraHeaders);
+                    
+                    res = await fetch(p.endpoint, {
+                        method: 'POST',
+                        headers: headers,
+                        body: JSON.stringify({ model: selectedModel.id, messages: history.map(m => ({ role: m.role, content: m.content })) })
+                    });
+                    data = await res.json();
+                    if (!res.ok) throw new Error(data.error?.message || `HTTP ${res.status}`);
+                    const response = data.choices?.[0]?.message?.content || 'No response';
+                    addMsg('assistant', response);
+                    history.push({ role: 'assistant', content: response });
                 }
-            } catch (err) { 
-                addMessage('assistant', '❌ Connection error.\n\nMake sure Ollama is running:\n1. Install: https://ollama.com\n2. Run: ollama serve\n3. Download: ollama pull llama3.2', true); 
+                updateStatus('ready');
+            } catch (err) {
+                addMsg('assistant', '❌ Error: ' + err.message, true);
+                updateStatus('error');
+            } finally {
+                showTyping(false);
+                loading = false;
+                document.getElementById('send-btn').disabled = false;
             }
-            finally { showTyping(false); isLoading = false; document.getElementById('send-btn').disabled = false; }
         }
 
-        function addMessage(role, content, isError = false) {
+        function addMsg(role, content, isError = false) {
             const container = document.getElementById('chat-messages');
             const div = document.createElement('div');
             div.className = 'message ' + role + (isError ? ' error' : '');
-            div.innerHTML = '<div class="message-avatar">' + (role === 'user' ? '👤' : '🤖') + '</div><div class="message-content">' + escapeHtml(content) + '</div>';
+            div.innerHTML = `<div class="msg-avatar">${role === 'user' ? '👤' : '🤖'}</div><div class="msg-content">${escapeHtml(content)}</div>`;
             container.appendChild(div);
             container.scrollTop = container.scrollHeight;
         }
 
-        function showTyping(show) { document.getElementById('typing-indicator').classList.toggle('active', show); }
-        function handleKeyDown(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
-        function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 100) + 'px'; }
-        function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+        function showTyping(show) { document.getElementById('typing').classList.toggle('active', show); }
+        function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
+        function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 80) + 'px'; }
+        function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
 
         init();
     </script>
