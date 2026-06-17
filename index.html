@@ -176,6 +176,49 @@
             50% { opacity: 0.5; transform: scale(1.2); }
         }
 
+        /* Ollama Installation Guide */
+        .ollama-guide {
+            margin-top: 16px;
+            padding: 16px 24px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 12px;
+            text-align: center;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .ollama-guide p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+
+        .ollama-guide strong {
+            color: var(--accent-primary);
+        }
+
+        .guide-commands {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .guide-commands p {
+            margin: 0;
+        }
+
+        .guide-commands code {
+            background: var(--bg-tertiary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--accent-secondary);
+            display: inline-block;
+        }
+
         /* Main Layout */
         .main-content {
             display: grid;
@@ -700,6 +743,14 @@
                 <span class="status-dot"></span>
                 <span id="status-text">Checking Ollama...</span>
             </div>
+            <div class="ollama-guide" id="ollama-guide" style="display: none;">
+                <p>💡 <strong>Cara Install Ollama:</strong></p>
+                <div class="guide-commands">
+                    <p><code>curl -fsSL https://ollama.com/install.sh | sh</code></p>
+                    <p><code>ollama serve</code></p>
+                    <p><code>ollama pull mistral</code></p>
+                </div>
+            </div>
         </header>
 
         <div class="main-content">
@@ -817,19 +868,24 @@
                 
                 const badge = document.getElementById('status-badge');
                 const text = document.getElementById('status-text');
+                const guide = document.getElementById('ollama-guide');
                 
                 if (data.ollama) {
                     badge.classList.remove('offline');
                     text.textContent = 'System Online - Ollama Active';
+                    guide.style.display = 'none';
                 } else {
                     badge.classList.add('offline');
-                    text.textContent = 'Ollama Not Running - Start with: ollama serve';
+                    text.textContent = 'Ollama Not Running';
+                    guide.style.display = 'block';
                 }
             } catch (error) {
                 const badge = document.getElementById('status-badge');
                 const text = document.getElementById('status-text');
+                const guide = document.getElementById('ollama-guide');
                 badge.classList.add('offline');
-                text.textContent = 'Ollama Not Running - Start with: ollama serve';
+                text.textContent = 'Ollama Not Running';
+                guide.style.display = 'block';
             }
         }
 
