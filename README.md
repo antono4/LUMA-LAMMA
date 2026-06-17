@@ -28,18 +28,17 @@ curl -O https://raw.githubusercontent.com/antono4/LUMA-LAMMA/main/index.html
 # Double-click file index.html
 ```
 
-## 🤖 Model yang Tersedia
+## 🤖 Model yang Tersedia (✅ Tested & Working)
 
 | # | Model | Icon | Keterangan |
 |---|-------|------|------------|
 | 1 | 🎲 Auto (Best Free) | 🎲 | Auto-select model terbaik |
 | 2 | 🧠 Liquid Thinking | 🧠 | Reasoning model |
 | 3 | ⚡ Nemotron Nano | ⚡ | NVIDIA AI - Fast |
-| 4 | 💻 Qwen Coder | 💻 | Coding assistant |
-| 5 | 💎 Gemma 4 26B | 💎 | Google AI |
-| 6 | 🌟 MiniMax | 🌟 | MiniMax AI |
-| 7 | 🔵 DeepSeek V4 | 🔵 | DeepSeek AI |
-| 8 | 🏊 Poolside | 🏊 | Poolside AI |
+| 4 | 💎 Gemma 4 26B | 💎 | Google AI |
+| 5 | 🔵 DeepSeek V4 | 🔵 | DeepSeek AI |
+| 6 | 🏊 Poolside | 🏊 | Poolside AI |
+| 7 | 🤖 GPT-OSS 20B | 🤖 | OpenAI OSS |
 
 ## 📡 Free LLM API Resources
 
