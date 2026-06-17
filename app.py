@@ -14,15 +14,23 @@ CORS(app)
 OLLAMA_URL = "http://localhost:11434"
 
 
-# Ollama models (free, local)
-# Only installed models will be shown
+# Default models (shown when Ollama is offline or running)
+DEFAULT_MODELS = [
+    {"id": "mistral", "name": "Mistral 7B", "free": True, "icon": "🌬️"},
+    {"id": "llama3", "name": "Llama 3", "free": True, "icon": "🦙"},
+    {"id": "llama3.2", "name": "Llama 3.2", "free": True, "icon": "🦙"},
+    {"id": "phi3", "name": "Phi-3", "free": True, "icon": "📘"},
+    {"id": "qwen2.5", "name": "Qwen 2.5", "free": True, "icon": "🔮"},
+    {"id": "gemma2", "name": "Gemma 2", "free": True, "icon": "💎"},
+    {"id": "codellama", "name": "Code Llama", "free": True, "icon": "💻"},
+    {"id": "deepseek-coder", "name": "DeepSeek Coder", "free": True, "icon": "🔧"},
+]
+
+# Providers
 PROVIDERS = {
     "ollama": {
         "name": "Ollama (Local)",
-        "models": [
-            {"id": "mistral", "name": "Mistral 7B", "free": True, "icon": "🌬️"},
-            {"id": "llama3", "name": "Llama 3", "free": True, "icon": "🦙"},
-        ]
+        "models": DEFAULT_MODELS
     }
 }
 
@@ -70,7 +78,7 @@ def get_available_models():
 
 @app.route("/api/providers", methods=["GET"])
 def get_providers():
-    """Get all available providers and their installed models"""
+    """Get all available providers and their models"""
     try:
         response = requests.get(f"{OLLAMA_URL}/api/tags", timeout=5)
         if response.status_code == 200:
@@ -96,8 +104,13 @@ def get_providers():
     except requests.exceptions.RequestException:
         pass
     
-    # Fallback to default if Ollama is not available
-    return jsonify(PROVIDERS)
+    # Always return default models (user can still see UI even if Ollama is offline)
+    return jsonify({
+        "ollama": {
+            "name": "Ollama (Local)",
+            "models": DEFAULT_MODELS
+        }
+    })
 
 
 @app.route("/api/chat", methods=["POST"])
