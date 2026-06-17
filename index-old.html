@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LUMA-LAMMA - Free AI Chat</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -20,17 +20,70 @@
             --success: #10b981;
             --error: #ef4444;
         }
-        body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
         .app { display: flex; flex-direction: column; min-height: 100vh; }
-        .header { background: var(--bg-secondary); border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        .logo { font-size: 24px; }
         .logo-text { font-weight: 700; font-size: 20px; background: linear-gradient(135deg, var(--accent), #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .status-badge { display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: var(--bg-tertiary); border-radius: 20px; font-size: 13px; }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); }
+        .header-right { display: flex; align-items: center; gap: 16px; }
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: var(--bg-tertiary);
+            border-radius: 20px;
+            font-size: 13px;
+        }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--error); }
+        .status-badge.online .status-dot { background: var(--success); }
+        .api-key-btn {
+            padding: 6px 12px;
+            background: var(--accent);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .api-key-btn:hover { background: var(--accent-light); }
         .main { display: flex; flex: 1; }
-        .sidebar { width: 280px; background: var(--bg-secondary); border-right: 1px solid var(--border); padding: 20px; }
+        .sidebar {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            padding: 20px;
+            overflow-y: auto;
+        }
         .sidebar-title { font-size: 12px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; letter-spacing: 1px; }
         .model-list { display: flex; flex-direction: column; gap: 8px; }
-        .model-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-tertiary); border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+        .model-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
         .model-item:hover { background: rgba(99, 102, 241, 0.1); }
         .model-item.active { background: rgba(99, 102, 241, 0.2); border: 1px solid var(--accent); }
         .model-icon { font-size: 24px; }
@@ -41,29 +94,27 @@
         .model-item.active .model-check { background: var(--accent); border-color: var(--accent); }
         .chat-area { flex: 1; display: flex; flex-direction: column; max-width: 900px; margin: 0 auto; width: 100%; padding: 20px; }
         .chat-messages { flex: 1; overflow-y: auto; padding-bottom: 20px; }
-        .welcome-message { text-align: center; padding: 40px 20px; }
+        .welcome-message { text-align: center; padding: 60px 20px; }
         .welcome-icon { font-size: 64px; margin-bottom: 20px; }
         .welcome-message h2 { font-size: 28px; margin-bottom: 12px; }
         .welcome-message p { color: var(--text-secondary); max-width: 500px; margin: 0 auto 24px; }
-        .api-section { background: var(--bg-secondary); border-radius: 16px; padding: 20px; margin: 20px auto; max-width: 500px; text-align: left; }
-        .api-section h3 { margin-bottom: 12px; font-size: 16px; }
-        .api-section p { color: var(--text-secondary); font-size: 14px; margin-bottom: 12px; }
-        .api-links { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-        .api-link { padding: 12px; background: var(--bg-tertiary); border-radius: 8px; color: var(--accent-light); text-decoration: none; display: flex; align-items: center; gap: 10px; }
-        .api-link:hover { background: var(--bg-primary); }
-        .api-input { width: 100%; padding: 12px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-size: 14px; margin-bottom: 10px; box-sizing: border-box; }
-        .api-select { width: 100%; padding: 12px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-size: 14px; margin-bottom: 10px; box-sizing: border-box; cursor: pointer; }
-        .api-btn { width: 100%; padding: 12px; background: var(--accent); border: none; border-radius: 8px; color: white; cursor: pointer; font-size: 14px; font-weight: 500; }
-        .api-btn:hover { background: var(--accent-light); }
-        .quick-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
-        .quick-btn { padding: 10px 16px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); cursor: pointer; transition: all 0.2s; }
+        .quick-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        .quick-btn {
+            padding: 10px 16px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
         .quick-btn:hover { background: var(--accent); border-color: var(--accent); }
         .message { display: flex; gap: 12px; margin-bottom: 20px; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .message.user { flex-direction: row-reverse; }
         .message-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
         .message.user .message-avatar { background: var(--accent); }
-        .message-content { max-width: 70%; padding: 12px 16px; background: var(--bg-secondary); border-radius: 16px; border-top-left-radius: 4px; white-space: pre-wrap; word-wrap: break-word; }
+        .message-content { max-width: 70%; padding: 12px 16px; background: var(--bg-secondary); border-radius: 16px; border-top-left-radius: 4px; }
         .message.user .message-content { background: var(--accent); border-radius: 16px; border-top-right-radius: 4px; }
         .message.error .message-content { background: rgba(239, 68, 68, 0.2); border: 1px solid var(--error); }
         .typing-indicator { display: none; padding: 20px; }
@@ -77,19 +128,41 @@
         .chat-input-wrapper { display: flex; gap: 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; padding: 8px; }
         .chat-input { flex: 1; background: transparent; border: none; color: var(--text-primary); font-size: 15px; padding: 8px 12px; resize: none; max-height: 150px; font-family: inherit; }
         .chat-input:focus { outline: none; }
-        .send-btn { width: 44px; height: 44px; background: var(--accent); border: none; border-radius: 12px; color: white; font-size: 20px; cursor: pointer; transition: all 0.2s; }
+        .send-btn {
+            width: 44px;
+            height: 44px;
+            background: var(--accent);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
         .send-btn:hover { background: var(--accent-light); }
         .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .footer { text-align: center; padding: 16px; color: var(--text-muted); font-size: 13px; border-top: 1px solid var(--border); }
         .footer a { color: var(--accent-light); text-decoration: none; }
-        @media (max-width: 768px) { .sidebar { display: none; } .message-content { max-width: 85%; } }
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .message-content { max-width: 85%; }
+        }
     </style>
 </head>
 <body>
     <div class="app">
         <header class="header">
-            <div class="logo-text">💬 LUMA-LAMMA</div>
-            <div class="status-badge"><span class="status-dot"></span><span>Ready</span></div>
+            <div class="header-left">
+                <span class="logo">💬</span>
+                <span class="logo-text">LUMA-LAMMA</span>
+            </div>
+            <div class="header-right">
+                <div class="status-badge" id="status-badge">
+                    <span class="status-dot"></span>
+                    <span id="status-text">Ready</span>
+                </div>
+                <button class="api-key-btn" onclick="showAPIKeyModal()">⚙️ API Key</button>
+            </div>
         </header>
         <main class="main">
             <aside class="sidebar">
@@ -101,34 +174,22 @@
                     <div class="welcome-message" id="welcome-message">
                         <div class="welcome-icon">💬</div>
                         <h2>Welcome to LUMA-LAMMA</h2>
-                        <p>Free AI chat! Get an API key below to start.</p>
-                        
-                        <div class="api-section">
-                            <h3>🔑 Get Free API Key</h3>
-                            <div class="api-links">
-                                <a href="https://console.groq.com/keys" target="_blank" class="api-link">📦 Groq (Fast & Free)</a>
-                                <a href="https://openrouter.ai/keys" target="_blank" class="api-link">🌐 OpenRouter (Many Free Models)</a>
-                            </div>
-                            
-                            <h3>Enter Your API Key</h3>
-                            <select class="api-select" id="provider-select">
-                                <option value="groq">Groq (gsk_...)</option>
-                                <option value="openrouter">OpenRouter (sk-or-...)</option>
-                            </select>
-                            <input type="password" class="api-input" id="api-key-input" placeholder="Paste your API key here...">
-                            <button class="api-btn" onclick="saveAPIKey()">Save & Start Chatting</button>
-                        </div>
-                        
+                        <p>Free AI chat powered by Groq. Select a model and start chatting! No Ollama needed.</p>
                         <div class="quick-actions">
                             <button class="quick-btn" onclick="sendSuggestion('Hello!')">👋 Hello</button>
-                            <button class="quick-btn" onclick="sendSuggestion('Explain quantum computing')">🔬 Explain</button>
-                            <button class="quick-btn" onclick="sendSuggestion('Write Python hello world')">💻 Code</button>
+                            <button class="quick-btn" onclick="sendSuggestion('Explain quantum computing simply')">🔬 Explain</button>
+                            <button class="quick-btn" onclick="sendSuggestion('Write a Python hello world')">💻 Code</button>
+                            <button class="quick-btn" onclick="sendSuggestion('What is machine learning?')">🤖 ML</button>
                         </div>
                     </div>
                 </div>
                 <div class="typing-indicator" id="typing-indicator">
                     <div class="message-avatar">🤖</div>
-                    <div class="typing-dots"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>
+                    <div class="typing-dots">
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                    </div>
                 </div>
                 <div class="chat-input-container">
                     <div class="chat-input-wrapper">
@@ -139,55 +200,44 @@
             </section>
         </main>
         <footer class="footer">
-            Powered by <a href="https://groq.com" target="_blank">Groq</a> & <a href="https://openrouter.ai" target="_blank">OpenRouter</a> | <a href="https://github.com/antono4/LUMA-LAMMA" target="_blank">LUMA-LAMMA</a>
+            Powered by <a href="https://groq.com" target="_blank">Groq</a> | <a href="https://github.com/antono4/LUMA-LAMMA" target="_blank">LUMA-LAMMA</a>
         </footer>
     </div>
     <script>
-        const API_ENDPOINTS = {
-            groq: 'https://api.groq.com/openai/v1/chat/completions',
-            openrouter: 'https://openrouter.ai/api/v1/chat/completions'
-        };
+        // Groq API - Free tier at https://console.groq.com
+        const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
-        const MODELS = {
-            groq: [
-                { id: 'llama-3.3-70b-versatile', name: 'Llama 3.3 70B', icon: '🦙', desc: 'Best for coding' },
-                { id: 'llama-3.1-8b-instant', name: 'Llama 3.1 8B', icon: '🦙', desc: 'Fast & free' },
-                { id: 'mixtral-8x7b-32768', name: 'Mixtral 8x7B', icon: '🌪️', desc: 'Balanced' },
-                { id: 'gemma2-9b-it', name: 'Gemma 2 9B', icon: '💎', desc: 'Google AI' }
-            ],
-            openrouter: [
-                { id: 'google/gemma-2-9b-it:free', name: 'Gemma 2 9B', icon: '💎', desc: 'Free' },
-                { id: 'meta-llama/llama-3-8b-instruct:free', name: 'Llama 3 8B', icon: '🦙', desc: 'Free' },
-                { id: 'mistralai/mistral-7b-instruct:free', name: 'Mistral 7B', icon: '🌬️', desc: 'Free' }
-            ]
-        };
+        // Available models (Groq - Free)
+        const MODELS = [
+            { id: 'llama-3.3-70b-versatile', name: 'Llama 3.3 70B', icon: '🦙', desc: 'Best for coding' },
+            { id: 'llama-3.1-8b-instant', name: 'Llama 3.1 8B', icon: '🦙', desc: 'Fast & free' },
+            { id: 'mixtral-8x7b-32768', name: 'Mixtral 8x7B', icon: '🌪️', desc: 'Balanced' },
+            { id: 'gemma2-9b-it', name: 'Gemma 2 9B', icon: '💎', desc: 'Google AI' }
+        ];
 
-        let selectedProvider = localStorage.getItem('provider') || 'groq';
-        let selectedModel = null;
+        let selectedModel = MODELS[0];
         let conversationHistory = [];
         let isLoading = false;
 
         function init() {
-            document.getElementById('provider-select').value = selectedProvider;
             renderModels();
+            document.getElementById('status-badge').classList.add('online');
+            document.getElementById('status-text').textContent = 'Ready';
         }
 
-        function saveAPIKey() {
-            const key = document.getElementById('api-key-input').value.trim();
-            if (key) {
-                localStorage.setItem('api_key', key);
-                localStorage.setItem('provider', selectedProvider);
-                document.getElementById('welcome-message').style.display = 'none';
-                addMessage('assistant', 'API Key saved! You can now start chatting. Select a model from the sidebar.');
+        function showAPIKeyModal() {
+            const currentKey = localStorage.getItem('groq_api_key') || '';
+            const key = prompt('Enter your Groq API Key:\n\nGet free key at: https://console.groq.com\n\nYour key is stored locally in your browser.');
+            if (key && key.trim()) {
+                localStorage.setItem('groq_api_key', key.trim());
+                alert('API Key saved!');
             }
         }
 
         function renderModels() {
             const list = document.getElementById('model-list');
             list.innerHTML = '';
-            const models = MODELS[selectedProvider] || MODELS.groq;
-            selectedModel = models[0];
-            models.forEach(model => {
+            MODELS.forEach(model => {
                 const isActive = model.id === selectedModel.id;
                 const item = document.createElement('div');
                 item.className = 'model-item' + (isActive ? ' active' : '');
@@ -197,31 +247,22 @@
             });
         }
 
-        document.getElementById('provider-select').onchange = function() {
-            selectedProvider = this.value;
-            renderModels();
-        };
-
         function selectModel(model) {
             selectedModel = model;
             document.querySelectorAll('.model-item').forEach(i => i.classList.remove('active'));
             event.currentTarget.classList.add('active');
+            clearChat();
         }
 
         function sendSuggestion(text) {
-            const key = localStorage.getItem('api_key');
-            if (!key) {
-                document.getElementById('api-key-input').focus();
-                return;
-            }
             document.getElementById('chat-input').value = text;
             sendMessage();
         }
 
         async function sendMessage() {
-            const apiKey = localStorage.getItem('api_key') || document.getElementById('api-key-input').value.trim();
+            const apiKey = localStorage.getItem('groq_api_key');
             if (!apiKey) {
-                document.getElementById('api-key-input').focus();
+                showAPIKeyModal();
                 return;
             }
 
@@ -242,25 +283,23 @@
 
             try {
                 const messages = conversationHistory.map(m => ({ role: m.role, content: m.content }));
-                const endpoint = API_ENDPOINTS[selectedProvider] || API_ENDPOINTS.groq;
 
-                const headers = { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey };
-                if (selectedProvider === 'openrouter') {
-                    headers['HTTP-Referer'] = 'https://github.com/antono4/LUMA-LAMMA';
-                    headers['X-Title'] = 'LUMA-LAMMA';
-                }
-
-                const res = await fetch(endpoint, {
+                const res = await fetch(GROQ_API_URL, {
                     method: 'POST',
-                    headers: headers,
+                    headers: {
+                        'Authorization': 'Bearer ' + apiKey,
+                        'Content-Type': 'application/json'
+                    },
                     body: JSON.stringify({ model: selectedModel.id, messages: messages })
                 });
 
-                const data = await res.json();
+                if (res.status === 401) {
+                    addMessage('assistant', 'Invalid API Key. Please click "API Key" button to update.', true);
+                    return;
+                }
 
-                if (res.status === 401 || res.status === 403) {
-                    addMessage('assistant', 'Invalid API Key. Please get a new key from Groq or OpenRouter.', true);
-                } else if (data.error) {
+                const data = await res.json();
+                if (data.error) {
                     addMessage('assistant', data.error.message || 'Error occurred', true);
                 } else {
                     const response = data.choices[0].message.content;
@@ -268,7 +307,7 @@
                     conversationHistory.push({ role: 'assistant', content: response });
                 }
             } catch (err) {
-                addMessage('assistant', 'Connection error. Check your internet connection.', true);
+                addMessage('assistant', 'Connection error. Please check your internet connection.', true);
             } finally {
                 showTyping(false);
                 isLoading = false;
@@ -285,10 +324,33 @@
             container.scrollTop = container.scrollHeight;
         }
 
-        function showTyping(show) { document.getElementById('typing-indicator').classList.toggle('active', show); }
-        function handleKeyDown(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
-        function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 150) + 'px'; }
-        function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+        function showTyping(show) {
+            document.getElementById('typing-indicator').classList.toggle('active', show);
+        }
+
+        function clearChat() {
+            conversationHistory = [];
+            document.getElementById('welcome-message').style.display = 'block';
+            document.querySelectorAll('.message').forEach(m => m.remove());
+        }
+
+        function handleKeyDown(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function autoResize(el) {
+            el.style.height = 'auto';
+            el.style.height = Math.min(el.scrollHeight, 150) + 'px';
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
 
         init();
     </script>
