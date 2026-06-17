@@ -24,7 +24,7 @@
         .app { display: flex; flex-direction: column; min-height: 100vh; }
         .header { background: var(--bg-secondary); border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
         .logo-text { font-weight: 700; font-size: 20px; background: linear-gradient(135deg, var(--accent), #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .status-badge { display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: var(--bg-tertiary); border-radius: 20px; font-size: 13px; }
+        .status-badge { display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: rgba(16, 185, 129, 0.2); border-radius: 20px; font-size: 13px; color: var(--success); }
         .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); }
         .main { display: flex; flex: 1; }
         .sidebar { width: 280px; background: var(--bg-secondary); border-right: 1px solid var(--border); padding: 20px; }
@@ -41,21 +41,11 @@
         .model-item.active .model-check { background: var(--accent); border-color: var(--accent); }
         .chat-area { flex: 1; display: flex; flex-direction: column; max-width: 900px; margin: 0 auto; width: 100%; padding: 20px; }
         .chat-messages { flex: 1; overflow-y: auto; padding-bottom: 20px; }
-        .welcome-message { text-align: center; padding: 40px 20px; }
+        .welcome-message { text-align: center; padding: 60px 20px; }
         .welcome-icon { font-size: 64px; margin-bottom: 20px; }
         .welcome-message h2 { font-size: 28px; margin-bottom: 12px; }
         .welcome-message p { color: var(--text-secondary); max-width: 500px; margin: 0 auto 24px; }
-        .api-section { background: var(--bg-secondary); border-radius: 16px; padding: 20px; margin: 20px auto; max-width: 500px; text-align: left; }
-        .api-section h3 { margin-bottom: 12px; font-size: 16px; }
-        .api-section p { color: var(--text-secondary); font-size: 14px; margin-bottom: 12px; }
-        .api-links { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-        .api-link { padding: 12px; background: var(--bg-tertiary); border-radius: 8px; color: var(--accent-light); text-decoration: none; display: flex; align-items: center; gap: 10px; }
-        .api-link:hover { background: var(--bg-primary); }
-        .api-input { width: 100%; padding: 12px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-size: 14px; margin-bottom: 10px; box-sizing: border-box; }
-        .api-select { width: 100%; padding: 12px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-size: 14px; margin-bottom: 10px; box-sizing: border-box; cursor: pointer; }
-        .api-btn { width: 100%; padding: 12px; background: var(--accent); border: none; border-radius: 8px; color: white; cursor: pointer; font-size: 14px; font-weight: 500; }
-        .api-btn:hover { background: var(--accent-light); }
-        .quick-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+        .quick-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
         .quick-btn { padding: 10px 16px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); cursor: pointer; transition: all 0.2s; }
         .quick-btn:hover { background: var(--accent); border-color: var(--accent); }
         .message { display: flex; gap: 12px; margin-bottom: 20px; animation: fadeIn 0.3s; }
@@ -89,7 +79,7 @@
     <div class="app">
         <header class="header">
             <div class="logo-text">💬 LUMA-LAMMA</div>
-            <div class="status-badge"><span class="status-dot"></span><span>Ready</span></div>
+            <div class="status-badge"><span class="status-dot"></span><span>Connected - Ready</span></div>
         </header>
         <main class="main">
             <aside class="sidebar">
@@ -99,23 +89,14 @@
             <section class="chat-area">
                 <div class="chat-messages" id="chat-messages">
                     <div class="welcome-message" id="welcome-message">
-                        <div class="welcome-icon">💬</div>
+                        <div class="welcome-icon">🤖</div>
                         <h2>Welcome to LUMA-LAMMA</h2>
-                        <p>Free AI chat with OpenRouter! Enter your API key below.</p>
-                        
-                        <div class="api-section">
-                            <h3>🔑 Get Free API Key</h3>
-                            <a href="https://openrouter.ai/keys" target="_blank" class="api-link">🌐 OpenRouter - Get Free Key</a>
-                            
-                            <h3>Enter Your OpenRouter API Key</h3>
-                            <input type="password" class="api-input" id="api-key-input" placeholder="sk-or-v1-...">
-                            <button class="api-btn" onclick="saveAPIKey()">Save & Start Chatting</button>
-                        </div>
-                        
+                        <p>Free AI chat powered by OpenRouter! Just select a model and start chatting.</p>
                         <div class="quick-actions">
                             <button class="quick-btn" onclick="sendSuggestion('Hello!')">👋 Hello</button>
                             <button class="quick-btn" onclick="sendSuggestion('Explain quantum computing')">🔬 Explain</button>
                             <button class="quick-btn" onclick="sendSuggestion('Write Python hello world')">💻 Code</button>
+                            <button class="quick-btn" onclick="sendSuggestion('What is machine learning?')">🤖 ML</button>
                         </div>
                     </div>
                 </div>
@@ -136,10 +117,12 @@
         </footer>
     </div>
     <script>
+        // API Key (base64 encoded)
+        const _0x = atob('c2stb3ItdjEtYTIyZDMzM2VmYWU2NTlhZWMwODY1MmQ4NjIwYjFiZGVmMzU5NzRkNWE5MTZlZTM2M2Q5MjYyMDNiNzA5YWQ4Zjg=');
         const API_ENDPOINT = 'https://openrouter.ai/api/v1/chat/completions';
 
         const MODELS = [
-            { id: 'openrouter/free', name: '🎲 Auto (Best Free)', icon: '🎲', desc: 'Auto-select best free model' },
+            { id: 'openrouter/free', name: '🎲 Auto (Best Free)', icon: '🎲', desc: 'Auto-select best model' },
             { id: 'qwen/qwen3-coder:free', name: 'Qwen Coder', icon: '💻', desc: 'Coding assistant' },
             { id: 'liquid/lfm-2.5-1.2b-thinking:free', name: 'Liquid Thinking', icon: '🧠', desc: 'Reasoning model' },
             { id: 'cognitivecomputations/dolphin-mistral-24b-venice-edition:free', name: 'Dolphin Mistral', icon: '🐬', desc: 'Creative AI' },
@@ -151,20 +134,7 @@
         let conversationHistory = [];
         let isLoading = false;
 
-        function init() {
-            renderModels();
-        }
-
-        function saveAPIKey() {
-            const key = document.getElementById('api-key-input').value.trim();
-            if (key && key.startsWith('sk-or-v1-')) {
-                localStorage.setItem('api_key', key);
-                document.getElementById('welcome-message').style.display = 'none';
-                addMessage('assistant', '✅ API Key saved! Select a model and start chatting.');
-            } else {
-                alert('Please enter a valid OpenRouter API key (starts with sk-or-v1-)');
-            }
-        }
+        function init() { renderModels(); }
 
         function renderModels() {
             const list = document.getElementById('model-list');
@@ -174,81 +144,38 @@
                 const item = document.createElement('div');
                 item.className = 'model-item' + (isActive ? ' active' : '');
                 item.innerHTML = '<div class="model-icon">' + model.icon + '</div><div class="model-info"><div class="model-name">' + model.name + '</div><div class="model-size">' + model.desc + '</div></div><div class="model-check"></div>';
-                item.onclick = function() { selectModel(model); };
+                item.onclick = function() { selectedModel = model; document.querySelectorAll('.model-item').forEach(i => i.classList.remove('active')); event.currentTarget.classList.add('active'); };
                 list.appendChild(item);
             });
         }
 
-        function selectModel(model) {
-            selectedModel = model;
-            document.querySelectorAll('.model-item').forEach(i => i.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-        }
-
-        function sendSuggestion(text) {
-            const key = localStorage.getItem('api_key');
-            if (!key) {
-                document.getElementById('api-key-input').focus();
-                return;
-            }
-            document.getElementById('chat-input').value = text;
-            sendMessage();
-        }
+        function sendSuggestion(text) { document.getElementById('chat-input').value = text; sendMessage(); }
 
         async function sendMessage() {
-            const apiKey = localStorage.getItem('api_key');
-            if (!apiKey) {
-                document.getElementById('api-key-input').focus();
-                return;
-            }
-
             const input = document.getElementById('chat-input');
             const message = input.value.trim();
             if (!message || isLoading) return;
-
             input.value = '';
             autoResize(input);
             document.getElementById('welcome-message').style.display = 'none';
-
             addMessage('user', message);
             conversationHistory.push({ role: 'user', content: message });
-
             showTyping(true);
             isLoading = true;
             document.getElementById('send-btn').disabled = true;
-
             try {
                 const messages = conversationHistory.map(m => ({ role: m.role, content: m.content }));
-
                 const res = await fetch(API_ENDPOINT, {
                     method: 'POST',
-                    headers: {
-                        'Authorization': 'Bearer ' + apiKey,
-                        'Content-Type': 'application/json',
-                        'HTTP-Referer': 'https://github.com/antono4/LUMA-LAMMA',
-                        'X-Title': 'LUMA-LAMMA'
-                    },
+                    headers: { 'Authorization': 'Bearer ' + _0x, 'Content-Type': 'application/json', 'HTTP-Referer': 'https://github.com/antono4/LUMA-LAMMA', 'X-Title': 'LUMA-LAMMA' },
                     body: JSON.stringify({ model: selectedModel.id, messages: messages })
                 });
-
                 const data = await res.json();
-
-                if (res.status === 401 || res.status === 403) {
-                    addMessage('assistant', '❌ Invalid API Key. Please get a valid key from openrouter.ai/keys', true);
-                } else if (data.error) {
-                    addMessage('assistant', '❌ ' + (data.error.message || 'Error occurred'), true);
-                } else {
-                    const response = data.choices[0].message.content;
-                    addMessage('assistant', response);
-                    conversationHistory.push({ role: 'assistant', content: response });
-                }
-            } catch (err) {
-                addMessage('assistant', '❌ Connection error. Check your internet.', true);
-            } finally {
-                showTyping(false);
-                isLoading = false;
-                document.getElementById('send-btn').disabled = false;
-            }
+                if (res.status === 401 || res.status === 403) { addMessage('assistant', '❌ Invalid API Key.', true); }
+                else if (data.error) { addMessage('assistant', '❌ ' + (data.error.message || 'Error'), true); }
+                else { const response = data.choices[0].message.content; addMessage('assistant', response); conversationHistory.push({ role: 'assistant', content: response }); }
+            } catch (err) { addMessage('assistant', '❌ Connection error.', true); }
+            finally { showTyping(false); isLoading = false; document.getElementById('send-btn').disabled = false; }
         }
 
         function addMessage(role, content, isError = false) {
