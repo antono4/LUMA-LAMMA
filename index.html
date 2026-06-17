@@ -418,6 +418,18 @@
         let conversationHistory = [];
         let isLoading = false;
 
+        // Default models - always available
+        const DEFAULT_MODELS = [
+            { id: 'mistral', name: 'Mistral 7B', icon: '🌬️' },
+            { id: 'llama3', name: 'Llama 3', icon: '🦙' },
+            { id: 'llama3.2', name: 'Llama 3.2', icon: '🦙' },
+            { id: 'phi3', name: 'Phi-3', icon: '📘' },
+            { id: 'qwen2.5', name: 'Qwen 2.5', icon: '🔮' },
+            { id: 'gemma2', name: 'Gemma 2', icon: '💎' },
+            { id: 'codellama', name: 'Code Llama', icon: '💻' },
+            { id: 'deepseek-coder', name: 'DeepSeek Coder', icon: '🔧' }
+        ];
+
         const modelIcons = {
             'mistral': '🌬️', 'llama3': '🦙', 'llama3.2': '🦙',
             'phi3': '📘', 'qwen2.5': '🔮', 'gemma2': '💎',
@@ -431,14 +443,20 @@
         };
 
         async function init() {
+            // Always show default models first
+            providers = { ollama: { name: 'Ollama (Local)', models: DEFAULT_MODELS } };
+            renderModels();
+            
+            // Then check status
             await checkStatus();
-            await loadProviders();
         }
 
         async function checkStatus() {
             try {
                 const res = await fetch('/api/status');
+                if (!res.ok) throw new Error('Status check failed');
                 const data = await res.json();
+                
                 const badge = document.getElementById('status-badge');
                 const text = document.getElementById('status-text');
                 const guide = document.getElementById('ollama-guide');
@@ -452,20 +470,10 @@
                     text.textContent = 'Ollama Offline';
                     guide.classList.add('visible');
                 }
-            } catch {
+            } catch (e) {
                 document.getElementById('status-badge').classList.add('offline');
                 document.getElementById('status-text').textContent = 'Ollama Offline';
                 document.getElementById('ollama-guide').classList.add('visible');
-            }
-        }
-
-        async function loadProviders() {
-            try {
-                const res = await fetch('/api/providers');
-                providers = await res.json();
-                renderModels();
-            } catch {
-                document.getElementById('model-list').innerHTML = '<div style="padding:20px;color:var(--error);text-align:center;">Failed to load models</div>';
             }
         }
 
