@@ -145,14 +145,13 @@
                 header: 'Authorization',
                 extraHeaders: { 'HTTP-Referer': 'https://github.com/antono4/LUMA-LAMMA', 'X-Title': 'LUMA-LAMMA' },
                 models: [
-                    { id: 'openrouter/free', name: '🎲 Auto (Best Free)', icon: '🎲' },
-                    { id: 'liquid/lfm-2.5-1.2b-thinking:free', name: '🧠 Liquid Thinking', icon: '🧠' },
-                    { id: 'nvidia/nemotron-nano-9b-v2:free', name: '⚡ Nemotron Nano', icon: '⚡' },
-                    { id: 'qwen/qwen3-coder:free', name: '💻 Qwen Coder', icon: '💻' },
-                    { id: 'google/gemma-4-26b-a4b-it:free', name: '💎 Gemma 4 26B', icon: '💎' },
-                    { id: 'minimax/minimax-m2.5:free', name: '🌟 MiniMax', icon: '🌟' },
-                    { id: 'deepseek/deepseek-v4-flash', name: '🔵 DeepSeek V4', icon: '🔵' },
-                    { id: 'poolside/laguna-xs.2:free', name: '🏊 Poolside', icon: '🏊' }
+                    { id: 'openrouter/free', name: '🎲 Auto (Best Free)', icon: '🎲', desc: 'Auto-select' },
+                    { id: 'liquid/lfm-2.5-1.2b-thinking:free', name: '🧠 Liquid Thinking', icon: '🧠', desc: 'Reasoning' },
+                    { id: 'nvidia/nemotron-nano-9b-v2:free', name: '⚡ Nemotron Nano', icon: '⚡', desc: 'Fast NVIDIA' },
+                    { id: 'google/gemma-4-26b-a4b-it:free', name: '💎 Gemma 4 26B', icon: '💎', desc: 'Google AI' },
+                    { id: 'deepseek/deepseek-v4-flash', name: '🔵 DeepSeek V4', icon: '🔵', desc: 'DeepSeek AI' },
+                    { id: 'poolside/laguna-xs.2:free', name: '🏊 Poolside', icon: '🏊', desc: 'Poolside AI' },
+                    { id: 'openai/gpt-oss-20b:free', name: '🤖 GPT-OSS 20B', icon: '🤖', desc: 'OpenAI OSS' }
                 ]
             }
         };
@@ -192,7 +191,7 @@
             PROVIDERS[currentProvider].models.forEach(m => {
                 const item = document.createElement('div');
                 item.className = 'model-item' + (m.id === selectedModel.id ? ' active' : '');
-                item.innerHTML = `<span class="model-icon">${m.icon}</span><span class="model-name">${m.name}</span>`;
+                item.innerHTML = `<span class="model-icon">${m.icon}</span><span class="model-name">${m.name}</span><span style="color:var(--text-muted);font-size:10px">${m.desc || ''}</span>`;
                 item.onclick = () => { selectedModel = m; renderModels(); };
                 list.appendChild(item);
             });
