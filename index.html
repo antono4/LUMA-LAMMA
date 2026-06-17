@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LUMA-LAMMA - Professional AI Chat</title>
+    <title>LUMA-LAMMA - Free Local AI Chat</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         * {
@@ -13,143 +13,90 @@
         }
 
         :root {
-            --bg-primary: #0a0a0f;
-            --bg-secondary: #12121a;
-            --bg-tertiary: #1a1a25;
+            --bg-primary: #0f0f14;
+            --bg-secondary: #1a1a24;
+            --bg-tertiary: #252532;
             --bg-card: #1e1e2a;
-            --accent-primary: #6366f1;
-            --accent-secondary: #8b5cf6;
-            --accent-tertiary: #a855f7;
-            --accent-glow: rgba(99, 102, 241, 0.3);
+            --accent: #6366f1;
+            --accent-light: #818cf8;
+            --accent-dark: #4f46e5;
             --text-primary: #ffffff;
             --text-secondary: #a1a1aa;
             --text-muted: #71717a;
-            --border-color: rgba(255, 255, 255, 0.08);
+            --border: rgba(255, 255, 255, 0.08);
             --success: #10b981;
             --error: #ef4444;
+            --gradient: linear-gradient(135deg, var(--accent), #8b5cf6);
         }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg-primary);
-            min-height: 100vh;
             color: var(--text-primary);
-            overflow-x: hidden;
-        }
-
-        /* Animated Background */
-        .bg-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-            overflow: hidden;
-        }
-
-        .bg-animation::before {
-            content: '';
-            position: absolute;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
-            top: -200px;
-            right: -200px;
-            animation: float 20s ease-in-out infinite;
-        }
-
-        .bg-animation::after {
-            content: '';
-            position: absolute;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 70%);
-            bottom: -100px;
-            left: -100px;
-            animation: float 15s ease-in-out infinite reverse;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(50px, 50px) rotate(5deg); }
-            50% { transform: translate(0, 100px) rotate(0deg); }
-            75% { transform: translate(-50px, 50px) rotate(-5deg); }
-        }
-
-        .container {
-            position: relative;
-            z-index: 1;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 24px;
             min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .app {
             display: flex;
             flex-direction: column;
+            min-height: 100vh;
         }
 
         /* Header */
-        header {
-            text-align: center;
-            padding: 40px 0;
-        }
-
-        .logo-container {
-            display: inline-flex;
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
             align-items: center;
-            gap: 16px;
-            margin-bottom: 16px;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        .logo-icon {
-            width: 64px;
-            height: 64px;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary), var(--accent-tertiary));
-            border-radius: 20px;
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient);
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 32px;
-            box-shadow: 0 8px 32px var(--accent-glow);
-            animation: pulse-glow 3s ease-in-out infinite;
+            font-size: 20px;
         }
 
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 8px 32px var(--accent-glow); }
-            50% { box-shadow: 0 8px 48px rgba(99, 102, 241, 0.5); }
-        }
-
-        header h1 {
-            font-size: 3rem;
+        .brand h1 {
+            font-size: 1.25rem;
             font-weight: 700;
-            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 50%, var(--accent-tertiary) 100%);
+            background: var(--gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: -0.02em;
         }
 
-        header p {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            font-weight: 400;
-            max-width: 600px;
-            margin: 0 auto;
+        .brand p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
         }
 
-        /* Status Badge */
         .status-badge {
-            display: inline-flex;
+            display: flex;
             align-items: center;
             gap: 8px;
+            padding: 8px 16px;
             background: rgba(16, 185, 129, 0.1);
             border: 1px solid rgba(16, 185, 129, 0.3);
             border-radius: 100px;
-            padding: 8px 20px;
-            margin-top: 20px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--success);
+            transition: all 0.3s ease;
         }
 
         .status-badge.offline {
@@ -176,101 +123,39 @@
             50% { opacity: 0.5; transform: scale(1.2); }
         }
 
-        /* Ollama Installation Guide */
-        .ollama-guide {
-            margin-top: 16px;
-            padding: 16px 24px;
-            background: rgba(99, 102, 241, 0.1);
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            border-radius: 12px;
-            text-align: center;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .ollama-guide p {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            margin-bottom: 12px;
-        }
-
-        .ollama-guide strong {
-            color: var(--accent-primary);
-        }
-
-        .guide-commands {
+        /* Main Content */
+        .main {
             display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .guide-commands p {
-            margin: 0;
-        }
-
-        .guide-commands code {
-            background: var(--bg-tertiary);
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            color: var(--accent-secondary);
-            display: inline-block;
-        }
-
-        /* Main Layout */
-        .main-content {
-            display: grid;
-            grid-template-columns: 320px 1fr;
-            gap: 24px;
             flex: 1;
-            margin-top: 24px;
+            overflow: hidden;
         }
 
         /* Sidebar */
         .sidebar {
+            width: 300px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            overflow-y: auto;
         }
 
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
+        .sidebar-header {
             padding: 20px;
-            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
         }
 
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .card-header-icon {
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
-
-        .card-header h3 {
-            font-size: 0.95rem;
+        .sidebar-title {
+            font-size: 0.85rem;
             font-weight: 600;
-            color: var(--text-primary);
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
         }
 
-        /* Model Selection */
         .model-list {
+            padding: 12px;
             display: flex;
             flex-direction: column;
             gap: 8px;
@@ -280,8 +165,8 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 12px;
-            background: var(--bg-secondary);
+            padding: 14px;
+            background: var(--bg-primary);
             border: 1px solid transparent;
             border-radius: 12px;
             cursor: pointer;
@@ -290,12 +175,12 @@
 
         .model-item:hover {
             background: var(--bg-tertiary);
-            border-color: var(--border-color);
+            border-color: var(--border);
         }
 
         .model-item.active {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.15));
-            border-color: var(--accent-primary);
+            background: rgba(99, 102, 241, 0.15);
+            border-color: var(--accent);
         }
 
         .model-icon {
@@ -307,347 +192,309 @@
             align-items: center;
             justify-content: center;
             font-size: 18px;
+            flex-shrink: 0;
         }
 
         .model-item.active .model-icon {
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            background: var(--gradient);
         }
 
         .model-info {
             flex: 1;
+            min-width: 0;
         }
 
         .model-name {
             font-size: 0.9rem;
             font-weight: 600;
-            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        .model-type {
+        .model-size {
             font-size: 0.75rem;
             color: var(--text-muted);
         }
 
-        .model-badge {
-            font-size: 0.65rem;
-            padding: 4px 8px;
-            background: rgba(99, 102, 241, 0.2);
-            color: var(--accent-primary);
-            border-radius: 6px;
-            font-weight: 600;
-        }
-
-        .model-error {
-            padding: 16px;
-            color: var(--error);
-            text-align: center;
-            font-size: 0.9rem;
-        }
-
-        .model-empty {
-            padding: 16px;
-            color: var(--text-muted);
-            text-align: center;
-            font-size: 0.9rem;
-        }
-
-        /* Chat Container */
-        .chat-section {
-            display: flex;
-            flex-direction: column;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            overflow: hidden;
-        }
-
-        .chat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 24px;
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .chat-model-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .chat-model-icon {
-            width: 44px;
-            height: 44px;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            border-radius: 12px;
+        .model-check {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
         }
 
-        .chat-model-name {
-            font-size: 1rem;
-            font-weight: 600;
+        .model-item.active .model-check {
+            background: var(--accent);
+            border-color: var(--accent);
         }
 
-        .chat-model-status {
-            font-size: 0.8rem;
-            color: var(--text-muted);
+        .model-item.active .model-check::after {
+            content: '✓';
+            color: white;
+            font-size: 12px;
         }
 
-        .chat-actions {
+        /* Ollama Guide */
+        .ollama-guide {
+            margin: 16px;
+            padding: 16px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            display: none;
+        }
+
+        .ollama-guide.visible {
+            display: block;
+        }
+
+        .ollama-guide h4 {
+            font-size: 0.85rem;
+            color: var(--accent-light);
+            margin-bottom: 12px;
+        }
+
+        .guide-steps {
             display: flex;
+            flex-direction: column;
             gap: 8px;
         }
 
-        .action-btn {
-            width: 40px;
-            height: 40px;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
+        .guide-step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .step-num {
+            width: 20px;
+            height: 20px;
+            background: var(--accent);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            color: var(--text-secondary);
-            font-size: 16px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            flex-shrink: 0;
         }
 
-        .action-btn:hover {
-            background: var(--bg-card);
-            border-color: var(--accent-primary);
-            color: var(--accent-primary);
+        .guide-code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            background: var(--bg-primary);
+            padding: 6px 10px;
+            border-radius: 6px;
+            color: var(--accent-light);
         }
 
-        .action-btn.danger:hover {
-            border-color: var(--error);
-            color: var(--error);
+        /* Chat Area */
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-primary);
+            overflow: hidden;
         }
 
-        /* Chat Messages */
         .chat-messages {
             flex: 1;
             overflow-y: auto;
             padding: 24px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 16px;
         }
 
+        .welcome-message {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .welcome-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .welcome-message h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .welcome-message p {
+            font-size: 0.95rem;
+            max-width: 400px;
+            margin: 0 auto 24px;
+        }
+
+        .quick-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .quick-btn {
+            padding: 10px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quick-btn:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border-color: var(--accent);
+        }
+
+        /* Message */
         .message {
             display: flex;
-            gap: 16px;
-            animation: slideIn 0.3s ease;
+            gap: 12px;
+            max-width: 800px;
+            animation: fadeIn 0.3s ease;
         }
 
-        @keyframes slideIn {
+        @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .message.user {
+            margin-left: auto;
             flex-direction: row-reverse;
         }
 
         .message-avatar {
-            width: 44px;
-            height: 44px;
-            border-radius: 14px;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 16px;
             flex-shrink: 0;
-        }
-
-        .message.user .message-avatar {
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            background: var(--bg-secondary);
         }
 
         .message.assistant .message-avatar {
-            background: linear-gradient(135deg, #10b981, #059669);
+            background: var(--gradient);
+        }
+
+        .message.user .message-avatar {
+            background: var(--bg-tertiary);
         }
 
         .message-content {
-            max-width: 75%;
-            padding: 16px 20px;
-            border-radius: 18px;
+            padding: 14px 18px;
+            border-radius: 16px;
             font-size: 0.95rem;
-            line-height: 1.7;
-        }
-
-        .message.user .message-content {
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            border-bottom-right-radius: 6px;
+            line-height: 1.6;
         }
 
         .message.assistant .message-content {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-bottom-left-radius: 6px;
-            white-space: pre-wrap;
+            background: var(--bg-secondary);
+            border-bottom-left-radius: 4px;
+        }
+
+        .message.user .message-content {
+            background: var(--accent);
+            color: white;
+            border-bottom-right-radius: 4px;
         }
 
         .message.error .message-content {
             background: rgba(239, 68, 68, 0.1);
-            border-color: rgba(239, 68, 68, 0.3);
+            border: 1px solid rgba(239, 68, 68, 0.3);
             color: var(--error);
         }
 
         /* Typing Indicator */
         .typing-indicator {
-            display: none;
-            align-items: center;
-            gap: 16px;
+            display: flex;
+            gap: 12px;
+            max-width: 800px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
         }
 
         .typing-indicator.active {
-            display: flex;
-        }
-
-        .typing-avatar {
-            width: 44px;
-            height: 44px;
-            background: linear-gradient(135deg, #10b981, #059669);
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
+            opacity: 1;
         }
 
         .typing-dots {
             display: flex;
-            gap: 6px;
-            padding: 16px 20px;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: 18px;
+            gap: 4px;
+            padding: 14px 18px;
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            border-bottom-left-radius: 4px;
         }
 
-        .typing-dots span {
+        .typing-dot {
             width: 8px;
             height: 8px;
-            background: var(--accent-primary);
+            background: var(--text-muted);
             border-radius: 50%;
-            animation: typing 1.4s infinite ease-in-out;
+            animation: typing 1.4s ease-in-out infinite;
         }
 
-        .typing-dots span:nth-child(1) { animation-delay: 0s; }
-        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
 
         @keyframes typing {
-            0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
-            40% { transform: scale(1); opacity: 1; }
-        }
-
-        /* Welcome State */
-        .welcome-state {
-            text-align: center;
-            padding: 60px 40px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .welcome-icon {
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary), var(--accent-tertiary));
-            border-radius: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            margin-bottom: 24px;
-            box-shadow: 0 12px 48px var(--accent-glow);
-        }
-
-        .welcome-state h3 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 12px;
-            background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .welcome-state p {
-            color: var(--text-muted);
-            font-size: 1rem;
-            max-width: 400px;
-        }
-
-        .suggestion-chips {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 24px;
-            justify-content: center;
-        }
-
-        .suggestion-chip {
-            padding: 10px 18px;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: 100px;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .suggestion-chip:hover {
-            background: var(--bg-card);
-            border-color: var(--accent-primary);
-            color: var(--accent-primary);
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-4px); opacity: 1; }
         }
 
         /* Chat Input */
-        .chat-input-area {
+        .chat-input-container {
             padding: 20px 24px;
             background: var(--bg-secondary);
-            border-top: 1px solid var(--border-color);
+            border-top: 1px solid var(--border);
         }
 
-        .chat-input-container {
+        .chat-input-wrapper {
             display: flex;
             gap: 12px;
             align-items: flex-end;
-        }
-
-        .input-wrapper {
-            flex: 1;
-            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
         }
 
         .chat-input {
-            width: 100%;
-            padding: 16px 20px;
-            background: var(--bg-tertiary);
-            border: 2px solid var(--border-color);
+            flex: 1;
+            padding: 14px 18px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
             border-radius: 16px;
             color: var(--text-primary);
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-family: inherit;
             resize: none;
-            min-height: 56px;
-            max-height: 200px;
-            transition: all 0.2s ease;
+            min-height: 50px;
+            max-height: 150px;
+            outline: none;
+            transition: border-color 0.2s ease;
         }
 
         .chat-input:focus {
-            outline: none;
-            border-color: var(--accent-primary);
-            box-shadow: 0 0 0 4px var(--accent-glow);
+            border-color: var(--accent);
         }
 
         .chat-input::placeholder {
@@ -655,23 +502,23 @@
         }
 
         .send-btn {
-            width: 56px;
-            height: 56px;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            width: 50px;
+            height: 50px;
+            background: var(--gradient);
             border: none;
-            border-radius: 16px;
-            color: #fff;
-            font-size: 1.2rem;
+            border-radius: 14px;
             cursor: pointer;
-            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 20px;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
         }
 
         .send-btn:hover {
             transform: scale(1.05);
-            box-shadow: 0 8px 24px var(--accent-glow);
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
         }
 
         .send-btn:disabled {
@@ -681,163 +528,148 @@
         }
 
         /* Footer */
-        footer {
+        .footer {
+            padding: 12px 24px;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
             text-align: center;
-            padding: 24px 0;
+            font-size: 0.75rem;
             color: var(--text-muted);
-            font-size: 0.85rem;
         }
 
-        footer a {
-            color: var(--accent-primary);
+        .footer a {
+            color: var(--accent-light);
             text-decoration: none;
-            transition: color 0.2s ease;
         }
 
-        footer a:hover {
-            color: var(--accent-secondary);
+        .footer a:hover {
+            text-decoration: underline;
         }
 
         /* Responsive */
-        @media (max-width: 1024px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-            
-            .sidebar {
-                flex-direction: row;
-                overflow-x: auto;
-            }
-            
-            .card {
-                min-width: 280px;
-            }
-        }
-
         @media (max-width: 768px) {
-            header h1 {
-                font-size: 2rem;
+            .sidebar {
+                display: none;
             }
-            
-            .container {
-                padding: 16px;
+
+            .header h1 {
+                font-size: 1rem;
             }
-            
-            .message-content {
-                max-width: 90%;
+
+            .brand p {
+                display: none;
+            }
+
+            .welcome-message h2 {
+                font-size: 1.25rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="bg-animation"></div>
-    
-    <div class="container">
-        <header>
-            <div class="logo-container">
-                <div class="logo-icon">🤖</div>
-            </div>
-            <h1>LUMA-LAMMA</h1>
-            <p>AI Chat Agent - 100% Local, Private & Free. Powered by Ollama</p>
-            <div class="status-badge" id="status-badge">
-                <span class="status-dot"></span>
-                <span id="status-text">Checking Ollama...</span>
-            </div>
-            <div class="ollama-guide" id="ollama-guide" style="display: none;">
-                <p>💡 <strong>Cara Install Ollama:</strong></p>
-                <div class="guide-commands">
-                    <p><code>curl -fsSL https://ollama.com/install.sh | sh</code></p>
-                    <p><code>ollama serve</code></p>
-                    <p><code>ollama pull mistral</code></p>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <div class="logo">🤖</div>
+                <div class="brand">
+                    <h1>LUMA-LAMMA</h1>
+                    <p>Free Local AI Chat</p>
                 </div>
+            </div>
+            <div class="status-badge offline" id="status-badge">
+                <span class="status-dot"></span>
+                <span id="status-text">Checking...</span>
             </div>
         </header>
 
-        <div class="main-content">
+        <!-- Main Content -->
+        <main class="main">
             <!-- Sidebar -->
-            <div class="sidebar">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-header-icon">🧠</div>
-                        <h3>Select Model</h3>
-                    </div>
-                    <div class="model-list" id="model-list">
-                        <!-- Models will be loaded here -->
-                    </div>
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <div class="sidebar-title">Select Model</div>
                 </div>
-            </div>
-
-            <!-- Chat Section -->
-            <div class="chat-section">
-                <div class="chat-header">
-                    <div class="chat-model-info">
-                        <div class="chat-model-icon">🤖</div>
-                        <div>
-                            <div class="chat-model-name" id="current-model-name">Mistral 7B</div>
-                            <div class="chat-model-status">Ready to chat</div>
+                <div class="model-list" id="model-list">
+                    <!-- Models loaded dynamically -->
+                </div>
+                
+                <!-- Ollama Installation Guide -->
+                <div class="ollama-guide" id="ollama-guide">
+                    <h4>💡 Install Ollama First</h4>
+                    <div class="guide-steps">
+                        <div class="guide-step">
+                            <span class="step-num">1</span>
+                            <span class="guide-code">curl -fsSL https://ollama.com/install.sh | sh</span>
+                        </div>
+                        <div class="guide-step">
+                            <span class="step-num">2</span>
+                            <span class="guide-code">ollama serve</span>
+                        </div>
+                        <div class="guide-step">
+                            <span class="step-num">3</span>
+                            <span class="guide-code">ollama pull mistral</span>
                         </div>
                     </div>
-                    <div class="chat-actions">
-                        <button class="action-btn" title="New Chat" onclick="clearChat()">✨</button>
-                        <button class="action-btn danger" title="Clear" onclick="clearChat()">🗑️</button>
-                    </div>
                 </div>
+            </aside>
 
+            <!-- Chat Area -->
+            <section class="chat-area">
                 <div class="chat-messages" id="chat-messages">
-                    <div class="welcome-state" id="welcome-state">
+                    <div class="welcome-message" id="welcome-message">
                         <div class="welcome-icon">💬</div>
-                        <h3>Welcome to LUMA-LAMMA</h3>
-                        <p>Start a conversation with AI. Select a model from the sidebar and begin chatting!</p>
-                        <div class="suggestion-chips">
-                            <span class="suggestion-chip" onclick="sendSuggestion('Hello! How are you?')">👋 Hello</span>
-                            <span class="suggestion-chip" onclick="sendSuggestion('Explain quantum computing in simple terms')">🔬 Explain</span>
-                            <span class="suggestion-chip" onclick="sendSuggestion('Write a Python function')">💻 Code</span>
-                            <span class="suggestion-chip" onclick="sendSuggestion('What is machine learning?')">🤖 ML</span>
+                        <h2>Welcome to LUMA-LAMMA</h2>
+                        <p>Chat with AI models locally on your computer. 100% private, free, and no internet required.</p>
+                        <div class="quick-actions">
+                            <button class="quick-btn" onclick="sendSuggestion('Hello! What can you help me with?')">👋 Hello</button>
+                            <button class="quick-btn" onclick="sendSuggestion('Explain quantum computing in simple terms')">🔬 Explain</button>
+                            <button class="quick-btn" onclick="sendSuggestion('Write a Python hello world function')">💻 Code</button>
+                            <button class="quick-btn" onclick="sendSuggestion('What is machine learning?')">🤖 ML</button>
                         </div>
                     </div>
                 </div>
 
+                <!-- Typing Indicator -->
                 <div class="typing-indicator" id="typing-indicator">
-                    <div class="typing-avatar">🤖</div>
+                    <div class="message-avatar">🤖</div>
                     <div class="typing-dots">
-                        <span></span>
-                        <span></span>
-                        <span></span>
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
                     </div>
                 </div>
 
-                <div class="chat-input-area">
-                    <div class="chat-input-container">
-                        <div class="input-wrapper">
-                            <textarea 
-                                class="chat-input" 
-                                id="chat-input" 
-                                placeholder="Type your message..."
-                                rows="1"
-                                onkeydown="handleKeyDown(event)"
-                            ></textarea>
-                        </div>
+                <!-- Chat Input -->
+                <div class="chat-input-container">
+                    <div class="chat-input-wrapper">
+                        <textarea 
+                            class="chat-input" 
+                            id="chat-input" 
+                            placeholder="Type your message..."
+                            rows="1"
+                            onkeydown="handleKeyDown(event)"
+                            oninput="autoResize(this)"
+                        ></textarea>
                         <button class="send-btn" id="send-btn" onclick="sendMessage()">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="22" y1="2" x2="11" y2="13"></line>
-                                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                            </svg>
+                            ➤
                         </button>
                     </div>
                 </div>
-            </div>
-        </div>
+            </section>
+        </main>
 
-        <footer>
-            <p>Powered by <a href="https://ollama.com" target="_blank">Ollama</a> | <a href="https://github.com/antono4/LUMA-LAMMA" target="_blank">LUMA-LAMMA</a></p>
+        <!-- Footer -->
+        <footer class="footer">
+            Powered by <a href="https://ollama.com" target="_blank">Ollama</a> | <a href="https://github.com/antono4/LUMA-LAMMA" target="_blank">LUMA-LAMMA</a>
         </footer>
     </div>
 
     <script>
         // State
         let providers = {};
-        let selectedProvider = '';
         let selectedModel = 'mistral';
+        let selectedModelName = 'Mistral 7B';
         let conversationHistory = [];
         let isLoading = false;
 
@@ -853,11 +685,22 @@
             'deepseek-coder': '🔧'
         };
 
+        // Model sizes (approximate)
+        const modelSizes = {
+            'mistral': '7B',
+            'llama3': '8B',
+            'llama3.2': '3B',
+            'phi3': '3B',
+            'qwen2.5': '7B',
+            'gemma2': '9B',
+            'codellama': '7B',
+            'deepseek-coder': '6B'
+        };
+
         // Initialize
         async function init() {
             await checkStatus();
             await loadProviders();
-            updateModelDisplay();
         }
 
         // Check Ollama status
@@ -872,20 +715,18 @@
                 
                 if (data.ollama) {
                     badge.classList.remove('offline');
-                    text.textContent = 'System Online - Ollama Active';
-                    guide.style.display = 'none';
+                    text.textContent = 'Ollama Active';
+                    guide.classList.remove('visible');
                 } else {
                     badge.classList.add('offline');
-                    text.textContent = 'Ollama Not Running';
-                    guide.style.display = 'block';
+                    text.textContent = 'Ollama Offline';
+                    guide.classList.add('visible');
                 }
             } catch (error) {
                 const badge = document.getElementById('status-badge');
-                const text = document.getElementById('status-text');
-                const guide = document.getElementById('ollama-guide');
                 badge.classList.add('offline');
-                text.textContent = 'Ollama Not Running';
-                guide.style.display = 'block';
+                document.getElementById('status-text').textContent = 'Ollama Offline';
+                document.getElementById('ollama-guide').classList.add('visible');
             }
         }
 
@@ -897,9 +738,8 @@
                 renderModels();
             } catch (error) {
                 console.error('Error loading providers:', error);
-                // Show error in model list
-                const list = document.getElementById('model-list');
-                list.innerHTML = '<div class="model-error">Failed to load models</div>';
+                document.getElementById('model-list').innerHTML = 
+                    '<div style="padding: 20px; color: var(--error); text-align: center;">Failed to load models</div>';
             }
         }
 
@@ -908,59 +748,44 @@
             const list = document.getElementById('model-list');
             list.innerHTML = '';
 
-            let hasModels = false;
-
             Object.entries(providers).forEach(([providerKey, provider]) => {
                 provider.models.forEach(model => {
-                    hasModels = true;
                     const icon = modelIcons[model.id] || '🤖';
+                    const size = modelSizes[model.id] || '';
                     const isActive = model.id === selectedModel;
                     
                     const item = document.createElement('div');
                     item.className = `model-item${isActive ? ' active' : ''}`;
-                    item.dataset.model = model.id;
                     item.innerHTML = `
                         <div class="model-icon">${icon}</div>
                         <div class="model-info">
                             <div class="model-name">${model.name}</div>
-                            <div class="model-type">${provider.name}</div>
+                            <div class="model-size">${size}</div>
                         </div>
-                        ${model.free ? '<span class="model-badge">FREE</span>' : ''}
+                        <div class="model-check"></div>
                     `;
                     item.onclick = () => selectModel(model.id, model.name);
                     list.appendChild(item);
                 });
             });
-
-            if (!hasModels) {
-                list.innerHTML = '<div class="model-empty">No models installed.<br>Run: ollama pull mistral</div>';
-            }
         }
 
         // Select model
         function selectModel(modelId, modelName) {
             selectedModel = modelId;
+            selectedModelName = modelName;
             
             // Update UI
             document.querySelectorAll('.model-item').forEach(item => {
-                item.classList.toggle('active', item.dataset.model === modelId);
+                item.classList.remove('active');
             });
-            
-            // Update header
-            document.getElementById('current-model-name').textContent = modelName;
-            document.getElementById('current-model-status').textContent = 'Ready to chat';
+            event.currentTarget.classList.add('active');
             
             // Clear conversation when switching models
             clearChat();
         }
 
-        // Update model display
-        function updateModelDisplay() {
-            const modelName = selectedModel.charAt(0).toUpperCase() + selectedModel.slice(1).replace(/-/g, ' ');
-            document.getElementById('current-model-name').textContent = modelName;
-        }
-
-        // Send suggestion (from chips)
+        // Send suggestion (from quick buttons)
         function sendSuggestion(text) {
             document.getElementById('chat-input').value = text;
             sendMessage();
@@ -977,9 +802,8 @@
             input.value = '';
             autoResize(input);
 
-            // Hide welcome state
-            const welcomeState = document.getElementById('welcome-state');
-            if (welcomeState) welcomeState.style.display = 'none';
+            // Hide welcome message
+            document.getElementById('welcome-message').style.display = 'none';
 
             // Add user message
             addMessage('user', message);
@@ -1004,13 +828,13 @@
                 const data = await response.json();
 
                 if (data.error) {
-                    addMessage('assistant', `Error: ${data.error}`, true);
+                    addMessage('assistant', data.error, true);
                 } else {
                     addMessage('assistant', data.response);
                     conversationHistory.push({ role: 'assistant', content: data.response });
                 }
             } catch (error) {
-                addMessage('assistant', `Ollama is not running. Please install and start Ollama first.`, true);
+                addMessage('assistant', 'Connection error. Please check your Ollama installation.', true);
             } finally {
                 showTyping(false);
                 isLoading = false;
@@ -1044,19 +868,10 @@
         // Clear chat
         function clearChat() {
             conversationHistory = [];
-            const messagesContainer = document.getElementById('chat-messages');
-            messagesContainer.innerHTML = `
-                <div class="welcome-state" id="welcome-state">
-                    <div class="welcome-icon">💬</div>
-                    <h3>Welcome to LUMA-LAMMA</h3>
-                    <p>Start a conversation with AI. Select a model from the sidebar and begin chatting!</p>
-                    <div class="suggestion-chips">
-                        <span class="suggestion-chip" onclick="sendSuggestion('Hello! How are you?')">👋 Hello</span>
-                        <span class="suggestion-chip" onclick="sendSuggestion('Explain quantum computing in simple terms')">🔬 Explain</span>
-                        <span class="suggestion-chip" onclick="sendSuggestion('Write a Python function')">💻 Code</span>
-                        <span class="suggestion-chip" onclick="sendSuggestion('What is machine learning?')">🤖 ML</span>
-                    </div>
-                </div>`;
+            document.getElementById('welcome-message').style.display = 'block';
+            // Remove all messages except welcome
+            const messages = document.querySelectorAll('.message');
+            messages.forEach(m => m.remove());
         }
 
         // Handle Enter key
@@ -1070,7 +885,7 @@
         // Auto resize textarea
         function autoResize(textarea) {
             textarea.style.height = 'auto';
-            textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px';
+            textarea.style.height = Math.min(textarea.scrollHeight, 150) + 'px';
         }
 
         // Escape HTML
