@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUMA-LAMMA - Free AI Chat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #0f0f14;
+            --bg-secondary: #1a1a24;
+            --bg-tertiary: #252532;
+            --accent: #6366f1;
+            --accent-light: #818cf8;
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --border: rgba(255, 255, 255, 0.08);
+            --success: #10b981;
+            --error: #ef4444;
+            --gradient: linear-gradient(135deg, var(--accent), #8b5cf6);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .app {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left { display: flex; align-items: center; gap: 12px; }
+
+        .logo {
+            width: 40px; height: 40px;
+            background: var(--gradient);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px;
+        }
+
+        .brand h1 {
+            font-size: 1.25rem; font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        .brand p { font-size: 0.75rem; color: var(--text-muted); }
+
+        .status-badge {
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 16px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 100px;
+            font-size: 0.8rem; color: var(--success);
+        }
+
+        .status-badge.offline {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: var(--error);
+        }
+
+        .status-dot {
+            width: 8px; height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .status-badge.offline .status-dot { background: var(--error); animation: none; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        /* Main */
+        .main { display: flex; flex: 1; overflow: hidden; }
+
+        /* Sidebar */
+        .sidebar {
+            width: 300px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            display: flex; flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .sidebar-header { padding: 20px; border-bottom: 1px solid var(--border); }
+
+        .sidebar-title {
+            font-size: 0.85rem; font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .model-list { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+
+        .model-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px;
+            background: var(--bg-primary);
+            border: 1px solid transparent;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .model-item:hover { background: var(--bg-tertiary); border-color: var(--border); }
+
+        .model-item.active {
+            background: rgba(99, 102, 241, 0.15);
+            border-color: var(--accent);
+        }
+
+        .model-icon {
+            width: 40px; height: 40px;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; flex-shrink: 0;
+        }
+
+        .model-item.active .model-icon { background: var(--gradient); }
+
+        .model-info { flex: 1; min-width: 0; }
+
+        .model-name { font-size: 0.9rem; font-weight: 600; }
+
+        .model-size { font-size: 0.75rem; color: var(--text-muted); }
+
+        .model-check {
+            width: 20px; height: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; transition: all 0.2s ease;
+        }
+
+        .model-item.active .model-check {
+            background: var(--accent); border-color: var(--accent);
+        }
+
+        .model-item.active .model-check::after {
+            content: '✓'; color: white; font-size: 12px;
+        }
+
+        /* Ollama Guide */
+        .ollama-guide {
+            margin: 16px; padding: 16px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px; display: none;
+        }
+
+        .ollama-guide.visible { display: block; }
+
+        .ollama-guide h4 { font-size: 0.85rem; color: var(--accent-light); margin-bottom: 12px; }
+
+        .guide-steps { display: flex; flex-direction: column; gap: 8px; }
+
+        .guide-step { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-secondary); }
+
+        .step-num {
+            width: 20px; height: 20px;
+            background: var(--accent); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.7rem; font-weight: 600; flex-shrink: 0;
+        }
+
+        .guide-code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            background: var(--bg-primary);
+            padding: 6px 10px; border-radius: 6px; color: var(--accent-light);
+        }
+
+        /* Chat Area */
+        .chat-area { flex: 1; display: flex; flex-direction: column; background: var(--bg-primary); overflow: hidden; }
+
+        .chat-messages {
+            flex: 1; overflow-y: auto;
+            padding: 24px;
+            display: flex; flex-direction: column; gap: 16px;
+        }
+
+        .welcome-message { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
+
+        .welcome-icon { font-size: 64px; margin-bottom: 16px; }
+
+        .welcome-message h2 { font-size: 1.5rem; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
+
+        .welcome-message p { font-size: 0.95rem; max-width: 400px; margin: 0 auto 24px; }
+
+        .quick-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+
+        .quick-btn {
+            padding: 10px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            color: var(--text-secondary);
+            font-size: 0.85rem; cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quick-btn:hover { background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--accent); }
+
+        /* Message */
+        .message { display: flex; gap: 12px; max-width: 800px; animation: fadeIn 0.3s ease; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user { margin-left: auto; flex-direction: row-reverse; }
+
+        .message-avatar {
+            width: 36px; height: 36px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; flex-shrink: 0; background: var(--bg-secondary);
+        }
+
+        .message.assistant .message-avatar { background: var(--gradient); }
+        .message.user .message-avatar { background: var(--bg-tertiary); }
+
+        .message-content {
+            padding: 14px 18px; border-radius: 16px; font-size: 0.95rem; line-height: 1.6;
+        }
+
+        .message.assistant .message-content { background: var(--bg-secondary); border-bottom-left-radius: 4px; }
+        .message.user .message-content { background: var(--accent); color: white; border-bottom-right-radius: 4px; }
+        .message.error .message-content {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3); color: var(--error);
+        }
+
+        /* Typing */
+        .typing-indicator { display: flex; gap: 12px; max-width: 800px; opacity: 0; transition: opacity 0.2s ease; }
+        .typing-indicator.active { opacity: 1; }
+
+        .typing-dots {
+            display: flex; gap: 4px;
+            padding: 14px 18px;
+            background: var(--bg-secondary);
+            border-radius: 16px; border-bottom-left-radius: 4px;
+        }
+
+        .typing-dot {
+            width: 8px; height: 8px; background: var(--text-muted);
+            border-radius: 50%; animation: typing 1.4s ease-in-out infinite;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-4px); opacity: 1; }
+        }
+
+        /* Input */
+        .chat-input-container { padding: 20px 24px; background: var(--bg-secondary); border-top: 1px solid var(--border); }
+
+        .chat-input-wrapper { display: flex; gap: 12px; align-items: flex-end; max-width: 900px; margin: 0 auto; }
+
+        .chat-input {
+            flex: 1; padding: 14px 18px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            color: var(--text-primary); font-size: 0.95rem; font-family: inherit;
+            resize: none; min-height: 50px; max-height: 150px;
+            outline: none; transition: border-color 0.2s ease;
+        }
+
+        .chat-input:focus { border-color: var(--accent); }
+        .chat-input::placeholder { color: var(--text-muted); }
+
+        .send-btn {
+            width: 50px; height: 50px;
+            background: var(--gradient); border: none; border-radius: 14px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; transition: all 0.2s ease; flex-shrink: 0;
+        }
+
+        .send-btn:hover { transform: scale(1.05); box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4); }
+        .send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        /* Footer */
+        .footer {
+            padding: 12px 24px; background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            text-align: center; font-size: 0.75rem; color: var(--text-muted);
+        }
+
+        .footer a { color: var(--accent-light); text-decoration: none; }
+        .footer a:hover { text-decoration: underline; }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .brand p { display: none; }
+            .welcome-message h2 { font-size: 1.25rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <header class="header">
+            <div class="header-left">
+                <div class="logo">🤖</div>
+                <div class="brand">
+                    <h1>LUMA-LAMMA</h1>
+                    <p>Free Local AI Chat</p>
+                </div>
+            </div>
+            <div class="status-badge offline" id="status-badge">
+                <span class="status-dot"></span>
+                <span id="status-text">Checking...</span>
+            </div>
+        </header>
+
+        <main class="main">
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <div class="sidebar-title">Select Model</div>
+                </div>
+                <div class="model-list" id="model-list"></div>
+                
+                <div class="ollama-guide" id="ollama-guide">
+                    <h4>💡 Install Ollama First</h4>
+                    <div class="guide-steps">
+                        <div class="guide-step">
+                            <span class="step-num">1</span>
+                            <span class="guide-code">curl -fsSL https://ollama.com/install.sh | sh</span>
+                        </div>
+                        <div class="guide-step">
+                            <span class="step-num">2</span>
+                            <span class="guide-code">ollama serve</span>
+                        </div>
+                        <div class="guide-step">
+                            <span class="step-num">3</span>
+                            <span class="guide-code">ollama pull mistral</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <section class="chat-area">
+                <div class="chat-messages" id="chat-messages">
+                    <div class="welcome-message" id="welcome-message">
+                        <div class="welcome-icon">💬</div>
+                        <h2>Welcome to LUMA-LAMMA</h2>
+                        <p>Chat with AI models locally on your computer. 100% private, free, and no internet required.</p>
+                        <div class="quick-actions">
+                            <button class="quick-btn" onclick="sendSuggestion('Hello! What can you help me with?')">👋 Hello</button>
+                            <button class="quick-btn" onclick="sendSuggestion('Explain quantum computing in simple terms')">🔬 Explain</button>
+                            <button class="quick-btn" onclick="sendSuggestion('Write a Python hello world function')">💻 Code</button>
+                            <button class="quick-btn" onclick="sendSuggestion('What is machine learning?')">🤖 ML</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="typing-indicator" id="typing-indicator">
+                    <div class="message-avatar">🤖</div>
+                    <div class="typing-dots">
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                    </div>
+                </div>
+
+                <div class="chat-input-container">
+                    <div class="chat-input-wrapper">
+                        <textarea class="chat-input" id="chat-input" placeholder="Type your message..." rows="1" onkeydown="handleKeyDown(event)" oninput="autoResize(this)"></textarea>
+                        <button class="send-btn" id="send-btn" onclick="sendMessage()">➤</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            Powered by <a href="https://ollama.com" target="_blank">Ollama</a> | <a href="https://github.com/antono4/LUMA-LAMMA" target="_blank">LUMA-LAMMA</a>
+        </footer>
+    </div>
+
+    <script>
+        // Groq API - Free tier available at https://console.groq.com
+        const GROQ_API_KEY = localStorage.getItem('groq_api_key') || '';
+        const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+
+        // Available models (Groq - Free)
+        const MODELS = [
+            { id: 'llama-3.3-70b-versatile', name: 'Llama 3.3 70B', icon: '🦙', desc: 'Best for coding' },
+            { id: 'llama-3.1-8b-instant', name: 'Llama 3.1 8B', icon: '🦙', desc: 'Fast & free' },
+            { id: 'mixtral-8x7b-32768', name: 'Mixtral 8x7B', icon: '🌪️', desc: 'Balanced' },
+            { id: 'gemma2-9b-it', name: 'Gemma 2 9B', icon: '💎', desc: 'Google AI' }
+        ];
+
+        let selectedModel = MODELS[0];
+        let conversationHistory = [];
+        let isLoading = false;
+
+        function init() {
+            renderModels();
+            setupAPIKey();
+            document.getElementById('status-badge').classList.add('online');
+            document.getElementById('status-text').textContent = 'Ready';
+        }
+
+        function setupAPIKey() {
+            const key = localStorage.getItem('groq_api_key');
+            if (key) {
+                document.getElementById('api-key-display').textContent = 'API Key: ••••••••' + key.slice(-4);
+            }
+        }
+
+        function showAPIKeyModal() {
+            const key = prompt('Enter your Groq API Key:\n(Get free key at https://console.groq.com)\n\nYour key is stored locally and never sent to any server except Groq.');
+            if (key && key.trim()) {
+                localStorage.setItem('groq_api_key', key.trim());
+                location.reload();
+            }
+        }
+
+        function renderModels() {
+            const list = document.getElementById('model-list');
+            list.innerHTML = '';
+
+            Object.entries(providers).forEach(([_, provider]) => {
+                provider.models.forEach(model => {
+                    const icon = modelIcons[model.id] || '🤖';
+                    const size = modelSizes[model.id] || '';
+                    const isActive = model.id === selectedModel;
+                    
+                    const item = document.createElement('div');
+                    item.className = `model-item${isActive ? ' active' : ''}`;
+                    item.innerHTML = `
+                        <div class="model-icon">${icon}</div>
+                        <div class="model-info">
+                            <div class="model-name">${model.name}</div>
+                            <div class="model-size">${size}</div>
+                        </div>
+                        <div class="model-check"></div>
+                    `;
+                    item.onclick = () => selectModel(model.id, model.name);
+                    list.appendChild(item);
+                });
+            });
+        }
+
+        function selectModel(modelId, modelName) {
+            selectedModel = modelId;
+            selectedModelName = modelName;
+            document.querySelectorAll('.model-item').forEach(i => i.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            clearChat();
+        }
+
+        function sendSuggestion(text) {
+            document.getElementById('chat-input').value = text;
+            sendMessage();
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message || isLoading) return;
+
+            input.value = '';
+            autoResize(input);
+            document.getElementById('welcome-message').style.display = 'none';
+
+            addMessage('user', message);
+            conversationHistory.push({ role: 'user', content: message });
+
+            showTyping(true);
+            isLoading = true;
+            document.getElementById('send-btn').disabled = true;
+
+            try {
+                const res = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ model: selectedModel, message, history: conversationHistory.slice(-20) })
+                });
+                const data = await res.json();
+
+                if (data.error) {
+                    addMessage('assistant', data.error, true);
+                } else {
+                    addMessage('assistant', data.response);
+                    conversationHistory.push({ role: 'assistant', content: data.response });
+                }
+            } catch {
+                addMessage('assistant', 'Connection error. Please check your Ollama installation.', true);
+            } finally {
+                showTyping(false);
+                isLoading = false;
+                document.getElementById('send-btn').disabled = false;
+            }
+        }
+
+        function addMessage(role, content, isError = false) {
+            const container = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.className = `message ${role}${isError ? ' error' : ''}`;
+            div.innerHTML = `<div class="message-avatar">${role === 'user' ? '👤' : '🤖'}</div><div class="message-content">${escapeHtml(content)}</div>`;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function showTyping(show) {
+            document.getElementById('typing-indicator').classList.toggle('active', show);
+        }
+
+        function clearChat() {
+            conversationHistory = [];
+            document.getElementById('welcome-message').style.display = 'block';
+            document.querySelectorAll('.message').forEach(m => m.remove());
+        }
+
+        function handleKeyDown(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function autoResize(el) {
+            el.style.height = 'auto';
+            el.style.height = Math.min(el.scrollHeight, 150) + 'px';
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        init();
+    </script>
+</body>
+</html>
