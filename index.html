@@ -41,12 +41,9 @@
         .provider-btn.active { background: rgba(99, 102, 241, 0.2); border-color: var(--accent); color: var(--text-primary); }
         .provider-icon { font-size: 16px; }
         .provider-name { font-weight: 500; }
-        .model-list { display: flex; flex-direction: column; gap: 4px; max-height: 300px; overflow-y: auto; }
-        .model-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: var(--bg-tertiary); border-radius: 8px; cursor: pointer; transition: all 0.2s; }
-        .model-item:hover { background: rgba(99, 102, 241, 0.1); }
-        .model-item.active { background: rgba(99, 102, 241, 0.2); border: 1px solid var(--accent); }
-        .model-icon { font-size: 16px; }
-        .model-name { font-size: 12px; font-weight: 500; }
+        .model-select { width: 100%; padding: 10px 12px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-size: 13px; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23a1a1aa' d='M3 4.5L6 7.5L9 4.5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
+        .model-select:focus { outline: none; border-color: var(--accent); }
+        .model-select option { background: var(--bg-secondary); padding: 8px; }
         .chat-area { flex: 1; display: flex; flex-direction: column; padding: 16px; }
         .chat-frame { flex: 1; display: flex; flex-direction: column; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; max-height: calc(100vh - 120px); }
         .chat-messages { flex: 1; overflow-y: auto; padding: 16px; }
@@ -97,8 +94,10 @@
                     <div class="provider-list" id="provider-list"></div>
                 </div>
                 <div class="sidebar-section">
-                    <div class="sidebar-title">Models</div>
-                    <div class="model-list" id="model-list"></div>
+                    <div class="sidebar-title">Select Model</div>
+                    <select class="model-select" id="model-select" onchange="changeModel(this.value)">
+                        <option value="">Loading...</option>
+                    </select>
                 </div>
             </aside>
             <section class="chat-area">
@@ -186,15 +185,24 @@
         }
 
         function renderModels() {
-            const list = document.getElementById('model-list');
-            list.innerHTML = '';
+            const select = document.getElementById('model-select');
+            select.innerHTML = '';
             PROVIDERS[currentProvider].models.forEach(m => {
-                const item = document.createElement('div');
-                item.className = 'model-item' + (m.id === selectedModel.id ? ' active' : '');
-                item.innerHTML = `<span class="model-icon">${m.icon}</span><span class="model-name">${m.name}</span><span style="color:var(--text-muted);font-size:10px">${m.desc || ''}</span>`;
-                item.onclick = () => { selectedModel = m; renderModels(); };
-                list.appendChild(item);
+                const opt = document.createElement('option');
+                opt.value = m.id;
+                opt.textContent = `${m.icon} ${m.name} ${m.desc ? '- ' + m.desc : ''}`;
+                if (m.id === selectedModel.id) opt.selected = true;
+                select.appendChild(opt);
             });
+        }
+
+        function changeModel(modelId) {
+            const model = PROVIDERS[currentProvider].models.find(m => m.id === modelId);
+            if (model) {
+                selectedModel = model;
+                history = [];
+                document.getElementById('chat-messages').innerHTML = document.getElementById('welcome').outerHTML;
+            }
         }
 
         function updateStatus(type, msg = '') {
