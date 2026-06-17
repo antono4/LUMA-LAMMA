@@ -1010,7 +1010,7 @@
                     conversationHistory.push({ role: 'assistant', content: data.response });
                 }
             } catch (error) {
-                addMessage('assistant', `Connection error: Ollama is not running. Start it with 'ollama serve'`, true);
+                addMessage('assistant', `Ollama is not running. Please install and start Ollama first.`, true);
             } finally {
                 showTyping(false);
                 isLoading = false;
