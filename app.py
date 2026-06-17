@@ -15,20 +15,27 @@ OLLAMA_URL = "http://localhost:11434"
 
 
 # Ollama models (free, local)
+# Only installed models will be shown
 PROVIDERS = {
     "ollama": {
         "name": "Ollama (Local)",
         "models": [
-            {"id": "mistral", "name": "Mistral 7B", "free": True},
-            {"id": "llama3", "name": "Llama 3", "free": True},
-            {"id": "llama3.2", "name": "Llama 3.2", "free": True},
-            {"id": "phi3", "name": "Phi-3", "free": True},
-            {"id": "qwen2.5", "name": "Qwen 2.5", "free": True},
-            {"id": "gemma2", "name": "Gemma 2", "free": True},
-            {"id": "codellama", "name": "Code Llama", "free": True},
-            {"id": "deepseek-coder", "name": "DeepSeek Coder", "free": True},
+            {"id": "mistral", "name": "Mistral 7B", "free": True, "icon": "🌬️"},
+            {"id": "llama3", "name": "Llama 3", "free": True, "icon": "🦙"},
         ]
     }
+}
+
+# Model info for reference
+ALL_MODELS = {
+    "mistral": {"name": "Mistral 7B", "icon": "🌬️"},
+    "llama3": {"name": "Llama 3", "icon": "🦙"},
+    "llama3.2": {"name": "Llama 3.2", "icon": "🦙"},
+    "phi3": {"name": "Phi-3", "icon": "📘"},
+    "qwen2.5": {"name": "Qwen 2.5", "icon": "🔮"},
+    "gemma2": {"name": "Gemma 2", "icon": "💎"},
+    "codellama": {"name": "Code Llama", "icon": "💻"},
+    "deepseek-coder": {"name": "DeepSeek Coder", "icon": "🔧"},
 }
 
 
@@ -38,12 +45,6 @@ def index():
     return send_file("index.html")
 
 
-@app.route("/api/providers", methods=["GET"])
-def get_providers():
-    """Get all available providers and their models"""
-    return jsonify(PROVIDERS)
-
-
 @app.route("/api/models", methods=["GET"])
 def get_available_models():
     """Get list of installed Ollama models"""
@@ -51,10 +52,51 @@ def get_available_models():
         response = requests.get(f"{OLLAMA_URL}/api/tags", timeout=5)
         if response.status_code == 200:
             models = response.json().get("models", [])
-            return jsonify({"models": [m["name"] for m in models]})
+            installed = []
+            for m in models:
+                name = m["name"].split(":")[0]  # Remove tag if present
+                info = ALL_MODELS.get(name, {"name": name, "icon": "🤖"})
+                installed.append({
+                    "id": name,
+                    "name": info.get("name", name),
+                    "icon": info.get("icon", "🤖"),
+                    "free": True
+                })
+            return jsonify({"models": installed})
         return jsonify({"error": "Ollama not responding"}), 500
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/providers", methods=["GET"])
+def get_providers():
+    """Get all available providers and their installed models"""
+    try:
+        response = requests.get(f"{OLLAMA_URL}/api/tags", timeout=5)
+        if response.status_code == 200:
+            models = response.json().get("models", [])
+            installed_models = []
+            for m in models:
+                name = m["name"].split(":")[0]
+                info = ALL_MODELS.get(name, {"name": name, "icon": "🤖"})
+                installed_models.append({
+                    "id": name,
+                    "name": info.get("name", name),
+                    "icon": info.get("icon", "🤖"),
+                    "free": True
+                })
+            
+            return jsonify({
+                "ollama": {
+                    "name": "Ollama (Local)",
+                    "models": installed_models
+                }
+            })
+    except:
+        pass
+    
+    # Fallback to default
+    return jsonify(PROVIDERS)
 
 
 @app.route("/api/chat", methods=["POST"])
