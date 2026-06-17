@@ -152,12 +152,23 @@
             color: var(--success);
         }
 
+        .status-badge.offline {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: var(--error);
+        }
+
         .status-dot {
             width: 8px;
             height: 8px;
             background: var(--success);
             border-radius: 50%;
             animation: pulse 2s ease-in-out infinite;
+        }
+
+        .status-badge.offline .status-dot {
+            background: var(--error);
+            animation: none;
         }
 
         @keyframes pulse {
@@ -281,6 +292,20 @@
             color: var(--accent-primary);
             border-radius: 6px;
             font-weight: 600;
+        }
+
+        .model-error {
+            padding: 16px;
+            color: var(--error);
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .model-empty {
+            padding: 16px;
+            color: var(--text-muted);
+            text-align: center;
+            font-size: 0.9rem;
         }
 
         /* Chat Container */
@@ -671,9 +696,9 @@
             </div>
             <h1>LUMA-LAMMA</h1>
             <p>AI Chat Agent - 100% Local, Private & Free. Powered by Ollama</p>
-            <div class="status-badge">
+            <div class="status-badge" id="status-badge">
                 <span class="status-dot"></span>
-                <span>System Online - Ollama Active</span>
+                <span id="status-text">Checking Ollama...</span>
             </div>
         </header>
 
@@ -779,8 +804,33 @@
 
         // Initialize
         async function init() {
+            await checkStatus();
             await loadProviders();
             updateModelDisplay();
+        }
+
+        // Check Ollama status
+        async function checkStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+                
+                const badge = document.getElementById('status-badge');
+                const text = document.getElementById('status-text');
+                
+                if (data.ollama) {
+                    badge.classList.remove('offline');
+                    text.textContent = 'System Online - Ollama Active';
+                } else {
+                    badge.classList.add('offline');
+                    text.textContent = 'Ollama Not Running - Start with: ollama serve';
+                }
+            } catch (error) {
+                const badge = document.getElementById('status-badge');
+                const text = document.getElementById('status-text');
+                badge.classList.add('offline');
+                text.textContent = 'Ollama Not Running - Start with: ollama serve';
+            }
         }
 
         // Load providers from backend
@@ -791,6 +841,9 @@
                 renderModels();
             } catch (error) {
                 console.error('Error loading providers:', error);
+                // Show error in model list
+                const list = document.getElementById('model-list');
+                list.innerHTML = '<div class="model-error">Failed to load models</div>';
             }
         }
 
@@ -799,8 +852,11 @@
             const list = document.getElementById('model-list');
             list.innerHTML = '';
 
+            let hasModels = false;
+
             Object.entries(providers).forEach(([providerKey, provider]) => {
                 provider.models.forEach(model => {
+                    hasModels = true;
                     const icon = modelIcons[model.id] || '🤖';
                     const isActive = model.id === selectedModel;
                     
@@ -819,6 +875,10 @@
                     list.appendChild(item);
                 });
             });
+
+            if (!hasModels) {
+                list.innerHTML = '<div class="model-empty">No models installed.<br>Run: ollama pull mistral</div>';
+            }
         }
 
         // Select model
@@ -894,7 +954,7 @@
                     conversationHistory.push({ role: 'assistant', content: data.response });
                 }
             } catch (error) {
-                addMessage('assistant', `Error: ${error.message}`, true);
+                addMessage('assistant', `Connection error: Ollama is not running. Start it with 'ollama serve'`, true);
             } finally {
                 showTyping(false);
                 isLoading = false;

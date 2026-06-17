@@ -86,16 +86,17 @@ def get_providers():
                     "free": True
                 })
             
-            return jsonify({
-                "ollama": {
-                    "name": "Ollama (Local)",
-                    "models": installed_models
-                }
-            })
-    except:
+            if installed_models:
+                return jsonify({
+                    "ollama": {
+                        "name": "Ollama (Local)",
+                        "models": installed_models
+                    }
+                })
+    except requests.exceptions.RequestException:
         pass
     
-    # Fallback to default
+    # Fallback to default if Ollama is not available
     return jsonify(PROVIDERS)
 
 
