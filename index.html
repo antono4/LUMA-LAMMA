@@ -723,7 +723,7 @@
                     <option value="perplexity">🔍 Perplexity</option>
                     <option value="openhands">🤖 OpenHands Agent</option>
                     <option value="openhands-embed" disabled>━━━━━━━━━━━━━━━━━━</option>
-                    <option value="openhands-full">🖥️ OpenHands Full (iframe)</option>
+                    <option value="openhands-full">🖥️ OpenHands Full (popup)</option>
                     <option value="huggingface">🤗 HuggingFace</option>
                     <option value="deepai">🎨 DeepAI</option>
                 </select>
@@ -991,27 +991,65 @@
             const welcome = document.getElementById('welcome');
             if (welcome) welcome.remove();
             
-            // Remove existing iframe
-            let existingIframe = document.getElementById('openhands-iframe');
-            if (existingIframe) existingIframe.remove();
+            // Open in new window/popup instead of iframe (since iframe is blocked)
+            const width = 1200;
+            const height = 800;
+            const left = (screen.width - width) / 2;
+            const top = (screen.height - height) / 2;
             
-            // Create iframe
-            const iframe = document.createElement('iframe');
-            iframe.id = 'openhands-iframe';
-            iframe.src = url;
-            iframe.style.cssText = `
-                width: 100%;
-                height: calc(100vh - 120px);
-                border: none;
-                border-radius: 12px;
-                background: #fff;
+            chatContainer.innerHTML = `
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 60vh; padding: 40px; text-align: center;">
+                    <div style="font-size: 80px; margin-bottom: 20px;">🖥️</div>
+                    <h2 style="color: #333; margin-bottom: 15px;">OpenHands Full Interface</h2>
+                    <p style="color: #666; margin-bottom: 30px; max-width: 500px;">
+                        Full OpenHands AI Agent with browser, terminal, file editor, and 30+ skills.
+                        <br><br>
+                        <strong>⚠️ Note:</strong> Will open in a new window (popup).
+                    </p>
+                    <div style="display: flex; gap: 15px;">
+                        <button onclick="openOpenHands()" style="
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            color: white;
+                            border: none;
+                            padding: 15px 40px;
+                            border-radius: 25px;
+                            font-size: 18px;
+                            cursor: pointer;
+                            font-weight: 600;
+                        ">
+                            🚀 Open OpenHands
+                        </button>
+                        <button onclick="hideIframe(); switchProvider('groq');" style="
+                            background: #f0f0f0;
+                            color: #333;
+                            border: none;
+                            padding: 15px 30px;
+                            border-radius: 25px;
+                            font-size: 16px;
+                            cursor: pointer;
+                        ">
+                            ← Back to Chat
+                        </button>
+                    </div>
+                </div>
             `;
-            chatContainer.innerHTML = '';
-            chatContainer.appendChild(iframe);
+            
+            // Store URL for popup
+            window._openhandsUrl = url;
             
             // Hide input area
             const inputArea = document.getElementById('input-area');
             if (inputArea) inputArea.style.display = 'none';
+        }
+        
+        function openOpenHands() {
+            const url = window._openhandsUrl || 'https://app.all-hands.dev/';
+            const width = 1400;
+            const height = 900;
+            const left = (screen.width - width) / 2;
+            const top = (screen.height - height) / 2;
+            
+            window.open(url, 'OpenHands', `width=${width},height=${height},left=${left},top=${top},toolbar=no,menubar=no`);
         }
         
         function hideIframe() {
