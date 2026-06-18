@@ -926,10 +926,25 @@
                 apiKey: '',
                 header: 'Authorization',
                 models: [
-                    { id: 'agent', name: '🤖 AI Agent', desc: 'Full AI agent with tools' },
-                    { id: 'code', name: '💻 Code Agent', desc: 'Specialized for coding' },
-                    { id: 'research', name: '🔬 Research Agent', desc: 'Deep research' }
-                ]
+                    { id: 'openhands', name: '🤖 AI Agent', desc: '🌐 Browse web | 💻 Run code | 🔧 Automate tasks' },
+                    { id: 'codeact', name: '💻 Code Agent', desc: 'Write, test, debug code with terminal & files' }
+                ],
+                description: `🤖 <b>OpenHands AI Agent</b> - Full AI-powered automation!
+                
+<b>✨ Superpowers:</b>
+• 🌐 <b>Browser</b> - Browse web, take screenshots
+• 💻 <b>Terminal</b> - Run shell commands
+• 📁 <b>File Editor</b> - Read/write/edit files
+• 🔗 <b>GitHub</b> - Code review, PR automation
+• 🧠 <b>30+ Skills</b> - Docker, Kubernetes, Slack, Linear...
+• 🔍 <b>Research</b> - Deep web search & analysis
+
+<b>💡 Perfect for:</b>
+• Building & testing applications
+• Automating workflows
+• Code review & debugging
+• Research & data analysis
+• DevOps tasks`
             }
         };
 
@@ -1169,81 +1184,94 @@
                 }
                 // OpenHands AI Agent
                 else if (currentProvider === 'openhands') {
-                    updateStatus('loading', '🤖 OpenHands Agent running...');
+                    updateStatus('loading', '🤖 Starting OpenHands Agent...');
                     
-                    // Build conversation messages
-                    const conversationHistory = history.map(m => ({
-                        content: [{ type: 'text', text: m.content }],
-                        role: m.role === 'user' ? 'user' : 'assistant'
-                    }));
-                    conversationHistory.push({
-                        content: [{ type: 'text', text: text }],
-                        role: 'user'
-                    });
-                    
-                    // Start new conversation
-                    const startRes = await fetch(`${p.endpoint}/app-conversations`, {
-                        method: 'POST',
-                        headers: { 
-                            'Authorization': `Bearer ${apiKey}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            initial_message: { content: conversationHistory },
-                            agent_kind: selectedModel.id === 'code' ? 'codeact' : 'openhands'
-                        })
-                    });
-                    const startData = await startRes.json();
-                    
-                    if (startData.detail) throw new Error(JSON.stringify(startData.detail));
-                    
-                    const convId = startData.conversation?.id || startData.id;
-                    const convUrl = startData.conversation?.conversation_url || `https://app.all-hands.dev/conversations/${convId}`;
-                    
-                    // Poll for completion
-                    let status = '';
-                    let maxPolls = 60;
-                    let pollCount = 0;
-                    
-                    while (pollCount < maxPolls) {
-                        await new Promise(r => setTimeout(r, 3000));
+                    try {
+                        // Build initial message
+                        const initialContent = history.length > 0 
+                            ? [...history.map(m => ({ content: [{ type: 'text', text: m.content }], role: m.role === 'user' ? 'user' : 'assistant' })), { content: [{ type: 'text', text: text }], role: 'user' }]
+                            : [{ content: [{ type: 'text', text: text }], role: 'user' }];
                         
-                        const eventsRes = await fetch(`${p.endpoint}/conversation/${convId}/events/search?limit=10&sort=asc`, {
-                            headers: { 'Authorization': `Bearer ${apiKey}` }
+                        // Start new conversation
+                        updateStatus('loading', '🤖 Creating conversation...');
+                        const startRes = await fetch(`${p.endpoint}/app-conversations`, {
+                            method: 'POST',
+                            headers: { 
+                                'Authorization': `Bearer ${apiKey}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                initial_message: { content: initialContent },
+                                agent_kind: selectedModel.id
+                            })
                         });
-                        const eventsData = await eventsRes.json();
+                        const startData = await startRes.json();
                         
-                        if (eventsData.items) {
-                            const latestEvents = eventsData.items.filter(e => e.role === 'assistant');
-                            if (latestEvents.length > 0) {
-                                const lastEvent = latestEvents[latestEvents.length - 1];
-                                if (lastEvent.content) {
-                                    const assistantMsg = Array.isArray(lastEvent.content) 
-                                        ? lastEvent.content.map(c => c.text || '').join('')
-                                        : lastEvent.content;
-                                    
-                                    if (assistantMsg && assistantMsg.trim()) {
-                                        addMsg('assistant', assistantMsg);
-                                        history.push({ role: 'assistant', content: assistantMsg });
-                                        response = assistantMsg;
-                                        break;
+                        if (startData.detail) throw new Error(JSON.stringify(startData.detail));
+                        
+                        const convId = startData.id;
+                        const convUrl = `https://app.all-hands.dev/conversations/${convId}`;
+                        
+                        // Poll for completion
+                        let responseText = '';
+                        let maxPolls = 120;
+                        let pollCount = 0;
+                        
+                        while (pollCount < maxPolls) {
+                            await new Promise(r => setTimeout(r, 2000));
+                            
+                            const eventsRes = await fetch(`${p.endpoint}/conversation/${convId}/events/search?limit=20&sort=asc`, {
+                                headers: { 'Authorization': `Bearer ${apiKey}` }
+                            });
+                            const eventsData = await eventsRes.json();
+                            
+                            if (eventsData.items) {
+                                // Find assistant messages
+                                const messages = eventsData.items.filter(e => 
+                                    e.kind === 'MessageEvent' && e.source === 'agent'
+                                );
+                                
+                                if (messages.length > 0) {
+                                    const latestMsg = messages[messages.length - 1];
+                                    if (latestMsg.value?.content) {
+                                        const content = Array.isArray(latestMsg.value.content) 
+                                            ? latestMsg.value.content.map(c => c.text || '').join('')
+                                            : latestMsg.value.content;
+                                        
+                                        if (content && content !== responseText) {
+                                            responseText = content;
+                                            addMsg('assistant', content);
+                                            updateStatus('loading', `🤖 Agent working... (${pollCount * 2}s)`);
+                                        }
                                     }
                                 }
+                                
+                                // Check if done
+                                const finishEvent = eventsData.items.find(e => e.kind === 'finish');
+                                if (finishEvent) {
+                                    break;
+                                }
+                                
+                                // Check execution status
+                                const statusEvent = eventsData.items.find(e => e.key === 'execution_status');
+                                if (statusEvent?.value === 'completed') break;
                             }
                             
-                            // Check if done
-                            const doneEvent = eventsData.items.find(e => e.type === 'finish');
-                            if (doneEvent) break;
+                            pollCount++;
                         }
                         
-                        pollCount++;
-                        updateStatus('loading', `🤖 Agent working... (${pollCount * 3}s)`);
-                    }
-                    
-                    if (!response) {
-                        response = `✅ Task started! View progress: ${convUrl}`;
-                        addMsg('assistant', response);
-                        history.push({ role: 'assistant', content: response });
+                        if (!responseText) {
+                            responseText = `✅ Task completed!\n\n🔗 View conversation: ${convUrl}`;
+                        } else {
+                            responseText += `\n\n🔗 View full conversation: ${convUrl}`;
+                        }
+                        
+                        addMsg('assistant', responseText);
+                        history.push({ role: 'assistant', content: responseText });
+                        response = responseText;
+                        
+                    } catch (err) {
+                        throw new Error('OpenHands Error: ' + err.message);
                     }
                 }
                 // Google Gemini
