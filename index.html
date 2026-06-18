@@ -722,6 +722,8 @@
                     <option value="together">🤝 Together AI</option>
                     <option value="perplexity">🔍 Perplexity</option>
                     <option value="openhands">🤖 OpenHands Agent</option>
+                    <option value="openhands-embed" disabled>━━━━━━━━━━━━━━━━━━</option>
+                    <option value="openhands-full">🖥️ OpenHands Full (iframe)</option>
                     <option value="huggingface">🤗 HuggingFace</option>
                     <option value="deepai">🎨 DeepAI</option>
                 </select>
@@ -945,6 +947,16 @@
 • Code review & debugging
 • Research & data analysis
 • DevOps tasks`
+            },
+            'openhands-full': {
+                name: 'OpenHands Full',
+                icon: '🖥️',
+                endpoint: 'https://app.all-hands.dev',
+                embedUrl: 'https://app.all-hands.dev',
+                isIframe: true,
+                models: [
+                    { id: 'full', name: '🖥️ Full Interface', desc: 'Complete OpenHands in iframe' }
+                ]
             }
         };
 
@@ -972,6 +984,43 @@
             renderModels(); 
             updateStatus('ready', 'Ready');
             document.getElementById('provider-select').value = currentProvider;
+        }
+        
+        function showIframe(url) {
+            const chatContainer = document.getElementById('chat-container');
+            const welcome = document.getElementById('welcome');
+            if (welcome) welcome.remove();
+            
+            // Remove existing iframe
+            let existingIframe = document.getElementById('openhands-iframe');
+            if (existingIframe) existingIframe.remove();
+            
+            // Create iframe
+            const iframe = document.createElement('iframe');
+            iframe.id = 'openhands-iframe';
+            iframe.src = url;
+            iframe.style.cssText = `
+                width: 100%;
+                height: calc(100vh - 120px);
+                border: none;
+                border-radius: 12px;
+                background: #fff;
+            `;
+            chatContainer.innerHTML = '';
+            chatContainer.appendChild(iframe);
+            
+            // Hide input area
+            const inputArea = document.getElementById('input-area');
+            if (inputArea) inputArea.style.display = 'none';
+        }
+        
+        function hideIframe() {
+            const iframe = document.getElementById('openhands-iframe');
+            if (iframe) iframe.remove();
+            
+            // Show input area
+            const inputArea = document.getElementById('input-area');
+            if (inputArea) inputArea.style.display = 'flex';
         }
 
         function getApiKey(provider) {
@@ -1012,6 +1061,17 @@
 
         function switchProvider(key) {
             const savedKey = getApiKey(key);
+            
+            // Handle iframe provider
+            if (PROVIDERS[key]?.isIframe) {
+                currentProvider = key;
+                showIframe(PROVIDERS[key].embedUrl);
+                return;
+            }
+            
+            // Hide iframe if showing
+            hideIframe();
+            
             if (!savedKey && PROVIDERS[key].apiKey === 'YOUR_API_KEY') {
                 showApiSetup(key);
                 document.getElementById('provider-select').value = currentProvider;
