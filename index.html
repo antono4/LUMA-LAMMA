@@ -53,6 +53,74 @@
             border-right: 1px solid var(--border);
         }
         
+        /* API Setup Modal */
+        .api-setup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .api-setup-content {
+            background: var(--bg-tertiary);
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 400px;
+            border: 1px solid var(--border);
+        }
+        
+        .api-setup-content h3 {
+            margin-bottom: 12px;
+        }
+        
+        .api-setup-content p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+        
+        .api-setup-content input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+        
+        .api-setup-content button {
+            padding: 10px 20px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-right: 8px;
+        }
+        
+        .api-setup-content .close-btn {
+            background: var(--bg-hover);
+        }
+        
+        .api-key-status {
+            font-size: 11px;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        
+        .api-key-status:hover {
+            background: var(--bg-hover);
+        }
+        
         /* Header */
         .header {
             background: var(--bg-primary);
@@ -651,8 +719,20 @@
                     <option value="chatanywhere">💬 ChatAnywhere</option>
                     <option value="openrouter">🌐 OpenRouter</option>
                 </select>
+                <span class="api-key-status" onclick="showApiSetup(currentProvider)" title="Click to change API key">🔑</span>
             </div>
         </header>
+        
+        <!-- API Key Setup -->
+        <div class="api-setup" id="api-setup" style="display: none;">
+            <div class="api-setup-content">
+                <h3>🔑 Setup API Key</h3>
+                <p>Enter your API key to use <span id="setup-provider-name"></span></p>
+                <input type="password" id="api-key-input" placeholder="Enter API key..." />
+                <button onclick="saveApiKey()">Save & Connect</button>
+                <button onclick="closeApiSetup()" class="close-btn">Cancel</button>
+            </div>
+        </div>
         
         <div class="chat-container" id="chat-container">
             <div class="welcome" id="welcome">
@@ -774,15 +854,43 @@
             }
         };
 
-        let currentProvider = 'openrouter';
-        let selectedModel = PROVIDERS.openrouter.models[0];
+        let currentProvider = 'chatanywhere';
+        let selectedModel = PROVIDERS.chatanywhere.models[0];
         let history = [];
         let loading = false;
 
         function init() { 
+            // Load saved API keys
+            for (let p in PROVIDERS) {
+                const savedKey = localStorage.getItem(`api_key_${p}`);
+                if (savedKey) PROVIDERS[p].apiKey = savedKey;
+            }
             renderModels(); 
             updateStatus('ready', 'Ready');
             document.getElementById('provider-select').value = currentProvider;
+        }
+
+        function getApiKey(provider) {
+            return localStorage.getItem(`api_key_${provider}`) || PROVIDERS[provider].apiKey || '';
+        }
+
+        function saveApiKey() {
+            const key = document.getElementById('api-key-input').value.trim();
+            if (!key) return alert('Please enter an API key');
+            localStorage.setItem(`api_key_${currentProvider}`, key);
+            PROVIDERS[currentProvider].apiKey = key;
+            closeApiSetup();
+            updateStatus('ready', `${PROVIDERS[currentProvider].name} Ready`);
+        }
+
+        function closeApiSetup() {
+            document.getElementById('api-setup').style.display = 'none';
+        }
+
+        function showApiSetup(provider) {
+            document.getElementById('setup-provider-name').textContent = PROVIDERS[provider].name;
+            document.getElementById('api-key-input').value = getApiKey(provider);
+            document.getElementById('api-setup').style.display = 'flex';
         }
 
         function renderModels() {
@@ -799,8 +907,15 @@
         }
 
         function switchProvider(key) {
+            const savedKey = getApiKey(key);
+            if (!savedKey && PROVIDERS[key].apiKey === 'YOUR_API_KEY') {
+                showApiSetup(key);
+                document.getElementById('provider-select').value = currentProvider;
+                return;
+            }
             currentProvider = key;
             selectedModel = PROVIDERS[key].models[0];
+            if (savedKey) PROVIDERS[key].apiKey = savedKey;
             history = [];
             document.getElementById('chat-container').innerHTML = `
                 <div class="welcome" id="welcome">
@@ -891,7 +1006,8 @@
                 let res, data;
                 
                 if (currentProvider === 'google') {
-                    res = await fetch(`${p.endpoint}/${selectedModel.id}:generateContent?key=${p.apiKey}`, {
+                    const apiKey = getApiKey(currentProvider);
+                    res = await fetch(`${p.endpoint}/${selectedModel.id}:generateContent?key=${apiKey}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ contents: [{ parts: [{ text: text }] }] })
@@ -902,8 +1018,9 @@
                     addMsg('assistant', response);
                     history.push({ role: 'model', content: response });
                 } else {
+                    const apiKey = getApiKey(currentProvider);
                     const headers = { 'Content-Type': 'application/json' };
-                    headers[p.header] = `Bearer ${p.apiKey}`;
+                    headers[p.header] = `Bearer ${apiKey}`;
                     if (p.extraHeaders) Object.assign(headers, p.extraHeaders);
                     
                     res = await fetch(p.endpoint, {
