@@ -643,7 +643,7 @@
             </div>
             <div class="header-right">
                 <div class="model-selector">
-                    <span>🤖</span>
+                    <span>🐆</span>
                     <select id="model-select" onchange="changeModel(this.value)"></select>
                 </div>
                 <select id="provider-select" class="provider-selector" onchange="switchProvider(this.value)">
@@ -655,7 +655,7 @@
         
         <div class="chat-container" id="chat-container">
             <div class="welcome" id="welcome">
-                <div class="welcome-icon">🤖</div>
+                <div class="welcome-icon">🐆</div>
                 <h1>Hello! I'm LUMA-LAMMA</h1>
                 <p>Your free AI assistant powered by advanced language models. How can I help you today?</p>
                 <div class="suggestions">
@@ -676,7 +676,7 @@
         </div>
         
         <div class="typing-indicator" id="typing">
-            <div class="message-avatar">🤖</div>
+            <div class="message-avatar">🐆</div>
             <div class="typing-bubble">
                 <div class="typing-dot"></div>
                 <div class="typing-dot"></div>
@@ -751,7 +751,7 @@
                     { id: 'google/gemma-4-26b-a4b-it:free', name: '💎 Gemma 4 26B', desc: 'Google AI' },
                     { id: 'deepseek/deepseek-v4-flash', name: '🔵 DeepSeek V4', desc: 'DeepSeek AI' },
                     { id: 'poolside/laguna-xs.2:free', name: '🏊 Poolside', desc: 'Poolside AI' },
-                    { id: 'openai/gpt-oss-20b:free', name: '🤖 GPT-OSS 20B', desc: 'OpenAI OSS' }
+                    { id: 'openai/gpt-oss-20b:free', name: '🐆 GPT-OSS 20B', desc: 'OpenAI OSS' }
                 ]
             },
             google: {
@@ -797,7 +797,7 @@
             history = [];
             document.getElementById('chat-container').innerHTML = `
                 <div class="welcome" id="welcome">
-                    <div class="welcome-icon">🤖</div>
+                    <div class="welcome-icon">🐆</div>
                     <h1>Hello! I'm LUMA-LAMMA</h1>
                     <p>Your free AI assistant powered by advanced language models. How can I help you today?</p>
                     <div class="suggestions">
@@ -929,7 +929,7 @@
             const div = document.createElement('div');
             div.className = 'message ' + role + (isError ? ' error' : '');
             
-            const avatar = role === 'user' ? '👤' : '🤖';
+            const avatar = role === 'user' ? '👤' : '🐆';
             
             div.innerHTML = `
                 <div class="message-avatar">${avatar}</div>
