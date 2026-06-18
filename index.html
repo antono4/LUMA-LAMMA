@@ -712,32 +712,28 @@
     </div>
 
     <script>
-        // Configure marked
-        marked.setOptions({
+        // Configure marked with error handling
+        marked.use({
             breaks: true,
-            gfm: true,
-            highlight: function(code, lang) {
-                if (lang && hljs.getLanguage(lang)) {
-                    return hljs.highlight(code, { language: lang }).value;
-                }
-                return hljs.highlightAuto(code).value;
-            }
+            gfm: true
         });
         
         // Custom renderer for code blocks
-        const renderer = new marked.Renderer();
-        renderer.code = function(code, language) {
-            const validLang = language && hljs.getLanguage(language) ? language : 'plaintext';
-            const highlighted = hljs.highlight(code, { language: validLang }).value;
-            return `<pre>
-                <div class="code-header">
-                    <span>${validLang}</span>
-                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                </div>
-                <code class="hljs language-${validLang}">${highlighted}</code>
-            </pre>`;
+        const renderer = {
+            code(code, language) {
+                const validLang = language && hljs.getLanguage(language) ? language : 'plaintext';
+                const highlighted = hljs.highlight(code || '', { language: validLang }).value;
+                return `<pre>
+                    <div class="code-header">
+                        <span>${validLang}</span>
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <code class="hljs language-${validLang}">${highlighted}</code>
+                </pre>`;
+            }
         };
-        marked.setOptions({ renderer });
+        
+        marked.use({ renderer });
         
         // Providers Configuration
         const PROVIDERS = {
@@ -947,8 +943,19 @@
             if (role === 'user' || isError) {
                 msgBubble.textContent = content;
             } else {
-                const rawHtml = marked.parse(content);
-                msgBubble.innerHTML = DOMPurify.sanitize(rawHtml);
+                try {
+                    // Ensure content is a string
+                    const textContent = String(content || '');
+                    if (textContent.trim()) {
+                        const rawHtml = marked.parse(textContent);
+                        msgBubble.innerHTML = DOMPurify.sanitize(rawHtml);
+                    } else {
+                        msgBubble.textContent = 'No response';
+                    }
+                } catch (err) {
+                    console.error('Markdown parsing error:', err);
+                    msgBubble.textContent = content;
+                }
             }
             
             container.appendChild(div);
