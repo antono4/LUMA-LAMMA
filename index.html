@@ -718,6 +718,9 @@
                 <select id="provider-select" class="provider-selector" onchange="switchProvider(this.value)">
                     <option value="groq">⚡ Groq</option>
                     <option value="openrouter">🌐 OpenRouter</option>
+                    <option value="cohere">🌊 Cohere</option>
+                    <option value="together">🤝 Together AI</option>
+                    <option value="perplexity">🔍 Perplexity</option>
                     <option value="huggingface">🤗 HuggingFace</option>
                     <option value="deepai">🎨 DeepAI</option>
                 </select>
@@ -875,6 +878,44 @@
                 header: 'api-key',
                 models: [
                     { id: 'text-generator', name: '📝 Text Generator', desc: 'AI text generation' }
+                ]
+            },
+            cohere: {
+                name: 'Cohere',
+                icon: '🌊',
+                endpoint: 'https://api.cohere.ai/v1/chat',
+                apiKey: '',
+                header: 'Authorization',
+                models: [
+                    { id: 'command-r-plus', name: '👑 Command R+', desc: 'Most capable' },
+                    { id: 'command-r', name: '⚡ Command R', desc: 'Fast & capable' },
+                    { id: 'command', name: '🔵 Command', desc: 'Stable' }
+                ]
+            },
+            together: {
+                name: 'Together AI',
+                icon: '🤝',
+                endpoint: 'https://api.together.xyz/v1/chat/completions',
+                apiKey: '',
+                header: 'Authorization',
+                models: [
+                    { id: 'mistralai/Mistral-7B-Instruct-v0.2', name: '🌪️ Mistral 7B', desc: 'Fast & good' },
+                    { id: 'meta-llama/Llama-3-8b-chat-hf', name: '🦙 Llama 3 8B', desc: 'Meta fast' },
+                    { id: 'mistralai/Mixtral-8x7B-Instruct-v0.1', name: '💨 Mixtral 8x7B', desc: 'MoE model' },
+                    { id: 'google/gemma-7b-it', name: '💎 Gemma 7B', desc: 'Google fast' },
+                    { id: 'upstage/solar-prod-instruct', name: '☀️ Solar Pro', desc: 'Strong instruct' }
+                ]
+            },
+            perplexity: {
+                name: 'Perplexity',
+                icon: '🔍',
+                endpoint: 'https://api.perplexity.ai/chat/completions',
+                apiKey: '',
+                header: 'Authorization',
+                models: [
+                    { id: 'llama-3.1-sonar-small-128k-online', name: '🧠 Sonar Small', desc: 'Fast + web search' },
+                    { id: 'llama-3.1-sonar-large-128k-online', name: '🔬 Sonar Large', desc: 'Best + web search' },
+                    { id: 'llama-3.1-sonar-huge-128k-online', name: '👑 Sonar Huge', desc: 'Most capable' }
                 ]
             }
         };
@@ -1071,6 +1112,45 @@
                     data = await res.json();
                     if (data.status !== 'success') throw new Error(data.output || 'Error');
                     response = data.output || 'No response';
+                    addMsg('assistant', response);
+                    history.push({ role: 'assistant', content: response });
+                }
+                // Cohere Chat
+                else if (currentProvider === 'cohere') {
+                    res = await fetch(p.endpoint, {
+                        method: 'POST',
+                        headers: { 
+                            'Authorization': `Bearer ${apiKey}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ 
+                            model: selectedModel.id,
+                            message: text
+                        })
+                    });
+                    data = await res.json();
+                    if (data.error) throw new Error(data.error.message);
+                    response = data.text || 'No response';
+                    addMsg('assistant', response);
+                    history.push({ role: 'assistant', content: response });
+                }
+                // Perplexity (with web search)
+                else if (currentProvider === 'perplexity') {
+                    res = await fetch(p.endpoint, {
+                        method: 'POST',
+                        headers: { 
+                            'Authorization': `Bearer ${apiKey}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ 
+                            model: selectedModel.id,
+                            messages: history.map(m => ({ role: m.role, content: m.content })),
+                            max_tokens: 1000
+                        })
+                    });
+                    data = await res.json();
+                    if (data.error) throw new Error(data.error.message);
+                    response = data.choices?.[0]?.message?.content || 'No response';
                     addMsg('assistant', response);
                     history.push({ role: 'assistant', content: response });
                 }
