@@ -716,6 +716,7 @@
                     <select id="model-select" onchange="changeModel(this.value)"></select>
                 </div>
                 <select id="provider-select" class="provider-selector" onchange="switchProvider(this.value)">
+                    <option value="groq">⚡ Groq</option>
                     <option value="openrouter">🌐 OpenRouter</option>
                 </select>
                 <span class="api-key-status" onclick="showApiSetup(currentProvider)" title="Click to change API key">🔑</span>
@@ -835,21 +836,42 @@
                     { id: 'poolside/laguna-xs.2:free', name: '🏊 Poolside XS', desc: 'Poolside AI' },
                     { id: 'liquid/lfm-2.5-1.2b-thinking:free', name: '🧠 Liquid Thinking', desc: 'Reasoning model' }
                 ]
+            },
+            groq: {
+                name: 'Groq',
+                icon: '⚡',
+                endpoint: 'https://api.groq.com/openai/v1/chat/completions',
+                apiKey: '',
+                header: 'Authorization',
+                models: [
+                    { id: 'llama-3.3-70b-versatile', name: '🦙 Llama 3.3 70B', desc: 'Fast & powerful' },
+                    { id: 'llama-3.1-8b-instant', name: '⚡ Llama 3.1 8B', desc: 'Very fast' },
+                    { id: 'mixtral-8x7b-32768', name: '🌪️ Mixtral 8x7B', desc: 'Fast MoE' },
+                    { id: 'gemma2-9b-it', name: '💎 Gemma 2 9B', desc: 'Google fast' }
+                ]
             }
         };
 
-        let currentProvider = 'openrouter';
-        let selectedModel = PROVIDERS.openrouter.models[0];
+        let currentProvider = 'groq';
+        let selectedModel = PROVIDERS.groq.models[0];
         let history = [];
         let loading = false;
 
         function init() { 
             // Default OpenRouter key (base64 encoded)
-            const defaultKey = atob('c2stb3ItdjEtZjZhZDQ2NDdmMTM5MjNlMTRjNjYxNTI1Njk2NDQ5ZGQzMzcyYjMyNTE4NjhhODNlZDkzNTM4NWQxYWMzN2NiZA==');
+            const defaultKeys = {
+                openrouter: atob('c2stb3ItdjEtZjZhZDQ2NDdmMTM5MjNlMTRjNjYxNTI1Njk2NDQ5ZGQzMzcyYjMyNTE4NjhhODNlZDkzNTM4NWQxYWMzN2NiZA==')
+            };
             
-            // Use stored key or default
-            const storedKey = localStorage.getItem('api_key_openrouter');
-            PROVIDERS.openrouter.apiKey = storedKey || defaultKey;
+            // Load stored keys or use defaults
+            for (let p in PROVIDERS) {
+                const storedKey = localStorage.getItem(`api_key_${p}`);
+                if (storedKey) {
+                    PROVIDERS[p].apiKey = storedKey;
+                } else if (defaultKeys[p]) {
+                    PROVIDERS[p].apiKey = defaultKeys[p];
+                }
+            }
             
             renderModels(); 
             updateStatus('ready', 'Ready');
