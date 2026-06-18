@@ -648,7 +648,6 @@
                     <select id="model-select" onchange="changeModel(this.value)"></select>
                 </div>
                 <select id="provider-select" class="provider-selector" onchange="switchProvider(this.value)">
-                    <option value="groq">⚡ Groq</option>
                     <option value="chatanywhere">💬 ChatAnywhere</option>
                     <option value="openrouter">🌐 OpenRouter</option>
                 </select>
@@ -771,19 +770,6 @@
                     { id: 'gpt-3.5-turbo', name: '🔵 GPT-3.5 Turbo', desc: 'Fast & free' },
                     { id: 'deepseek-chat', name: '🔵 DeepSeek V3', desc: 'DeepSeek AI' },
                     { id: 'deepseek-reasoner', name: '🧠 DeepSeek R1', desc: 'Reasoning model' }
-                ]
-            },
-            groq: {
-                name: 'Groq',
-                icon: '⚡',
-                endpoint: 'https://api.groq.com/openai/v1/chat/completions',
-                apiKey: atob('Z3NrX2VJdDZEazc2RlF3Qk1aeU1wS3VXZ2R5YjNGWW9tcTJXZm5SaG1XVERBdXNnMFlDQXpUVFc='),
-                header: 'Authorization',
-                models: [
-                    { id: 'llama-3.3-70b-versatile', name: '🦙 Llama 3.3 70B', desc: 'Fast & powerful' },
-                    { id: 'llama-3.1-8b-instant', name: '⚡ Llama 3.1 8B', desc: 'Very fast' },
-                    { id: 'mixtral-8x7b-32768', name: '🌪️ Mixtral 8x7B', desc: 'Fast MoE' },
-                    { id: 'gemma2-9b-it', name: '💎 Gemma 2 9B', desc: 'Google fast' }
                 ]
             }
         };
