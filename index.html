@@ -860,11 +860,22 @@
         let loading = false;
 
         function init() { 
-            // Load saved API keys
+            // Default API keys (base64 encoded)
+            const defaultKeys = {
+                chatanywhere: atob('c2stOE5lT1JTVG9aVUlHcmNoTXZIZFZoVFlpTm5ra1R0enI3b3Vxc2NOQkV3M05Nb2N4'),
+                openrouter: atob('c2stb3ItdjEtZjZhZDQ2NDdmMTM5MjNlMTRjNjYxNTI1Njk2NDQ5ZGQzMzcyYjMyNTE4NjhhODNlZDkzNTM4NWQxYWMzN2NiZA==')
+            };
+            
+            // Override with stored keys if available, otherwise use defaults
             for (let p in PROVIDERS) {
                 const savedKey = localStorage.getItem(`api_key_${p}`);
-                if (savedKey) PROVIDERS[p].apiKey = savedKey;
+                if (savedKey) {
+                    PROVIDERS[p].apiKey = savedKey;
+                } else if (defaultKeys[p]) {
+                    PROVIDERS[p].apiKey = defaultKeys[p];
+                }
             }
+            
             renderModels(); 
             updateStatus('ready', 'Ready');
             document.getElementById('provider-select').value = currentProvider;
