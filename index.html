@@ -716,7 +716,6 @@
                     <select id="model-select" onchange="changeModel(this.value)"></select>
                 </div>
                 <select id="provider-select" class="provider-selector" onchange="switchProvider(this.value)">
-                    <option value="chatanywhere">💬 ChatAnywhere</option>
                     <option value="openrouter">🌐 OpenRouter</option>
                 </select>
                 <span class="api-key-status" onclick="showApiSetup(currentProvider)" title="Click to change API key">🔑</span>
@@ -836,45 +835,21 @@
                     { id: 'poolside/laguna-xs.2:free', name: '🏊 Poolside XS', desc: 'Poolside AI' },
                     { id: 'liquid/lfm-2.5-1.2b-thinking:free', name: '🧠 Liquid Thinking', desc: 'Reasoning model' }
                 ]
-            },
-            chatanywhere: {
-                name: 'ChatAnywhere',
-                icon: '💬',
-                endpoint: 'https://api.chatanywhere.org/v1/chat/completions',
-                apiKey: atob('c2stOE5lT1JTVG9aVUlHcmNoTXZIZFZoVFlpTm5ra1R0enI3b3Vxc2NOQkV3M05Nb2N4'),
-                header: 'Authorization',
-                models: [
-                    { id: 'gpt-4o', name: '🤖 GPT-4o', desc: 'Most capable' },
-                    { id: 'gpt-4o-mini', name: '⚡ GPT-4o Mini', desc: 'Fast & capable' },
-                    { id: 'gpt-4.1', name: '💎 GPT-4.1', desc: 'Latest GPT' },
-                    { id: 'gpt-3.5-turbo', name: '🔵 GPT-3.5 Turbo', desc: 'Fast & free' },
-                    { id: 'deepseek-chat', name: '🔵 DeepSeek V3', desc: 'DeepSeek AI' },
-                    { id: 'deepseek-reasoner', name: '🧠 DeepSeek R1', desc: 'Reasoning model' }
-                ]
             }
         };
 
-        let currentProvider = 'chatanywhere';
-        let selectedModel = PROVIDERS.chatanywhere.models[0];
+        let currentProvider = 'openrouter';
+        let selectedModel = PROVIDERS.openrouter.models[0];
         let history = [];
         let loading = false;
 
         function init() { 
-            // Default API keys (base64 encoded)
-            const defaultKeys = {
-                chatanywhere: atob('c2stOE5lT1JTVG9aVUlHcmNoTXZIZFZoVFlpTm5ra1R0enI3b3Vxc2NOQkV3M05Nb2N4'),
-                openrouter: atob('c2stb3ItdjEtZjZhZDQ2NDdmMTM5MjNlMTRjNjYxNTI1Njk2NDQ5ZGQzMzcyYjMyNTE4NjhhODNlZDkzNTM4NWQxYWMzN2NiZA==')
-            };
+            // Default OpenRouter key (base64 encoded)
+            const defaultKey = atob('c2stb3ItdjEtZjZhZDQ2NDdmMTM5MjNlMTRjNjYxNTI1Njk2NDQ5ZGQzMzcyYjMyNTE4NjhhODNlZDkzNTM4NWQxYWMzN2NiZA==');
             
-            // Override with stored keys if available, otherwise use defaults
-            for (let p in PROVIDERS) {
-                const savedKey = localStorage.getItem(`api_key_${p}`);
-                if (savedKey) {
-                    PROVIDERS[p].apiKey = savedKey;
-                } else if (defaultKeys[p]) {
-                    PROVIDERS[p].apiKey = defaultKeys[p];
-                }
-            }
+            // Use stored key or default
+            const storedKey = localStorage.getItem('api_key_openrouter');
+            PROVIDERS.openrouter.apiKey = storedKey || defaultKey;
             
             renderModels(); 
             updateStatus('ready', 'Ready');
