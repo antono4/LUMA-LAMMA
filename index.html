@@ -720,7 +720,6 @@
                     <option value="openrouter">🌐 OpenRouter</option>
                     <option value="huggingface">🤗 HuggingFace</option>
                     <option value="deepai">🎨 DeepAI</option>
-                    <option value="jinai">🔍 Jina AI</option>
                 </select>
                 <span class="api-key-status" onclick="showApiSetup(currentProvider)" title="Click to change API key">🔑</span>
             </div>
@@ -876,16 +875,6 @@
                 header: 'api-key',
                 models: [
                     { id: 'text-generator', name: '📝 Text Generator', desc: 'AI text generation' }
-                ]
-            },
-            jinai: {
-                name: 'Jina AI',
-                icon: '🔍',
-                endpoint: 'https://api.jina.ai/v1/chat',
-                apiKey: '',
-                header: 'Authorization',
-                models: [
-                    { id: 'jina-chatty', name: '💬 Jina Chat', desc: 'Fast chat AI' }
                 ]
             }
         };
@@ -1082,24 +1071,6 @@
                     data = await res.json();
                     if (data.status !== 'success') throw new Error(data.output || 'Error');
                     response = data.output || 'No response';
-                    addMsg('assistant', response);
-                    history.push({ role: 'assistant', content: response });
-                }
-                // Jina AI Chat
-                else if (currentProvider === 'jinai') {
-                    res = await fetch(p.endpoint, {
-                        method: 'POST',
-                        headers: { 
-                            'Authorization': `Bearer ${apiKey}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ 
-                            model: 'jina-chatty',
-                            messages: history.map(m => ({ role: m.role, content: m.content }))
-                        })
-                    });
-                    data = await res.json();
-                    response = data.choices?.[0]?.message?.content || data.error?.message || 'No response';
                     addMsg('assistant', response);
                     history.push({ role: 'assistant', content: response });
                 }
