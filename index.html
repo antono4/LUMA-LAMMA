@@ -131,6 +131,16 @@
             color: var(--success);
         }
 
+        .free-badge {
+            padding: 6px 14px;
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(139, 92, 246, 0.2));
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 20px;
+            color: var(--success);
+            font-size: 12px;
+            font-weight: 500;
+        }
+
         /* Main Content */
         .main {
             display: flex;
@@ -773,10 +783,7 @@
                 </div>
             </div>
             <div class="header-right">
-                <button class="api-key-btn" id="api-key-btn" onclick="openModal()">
-                    <span>🔑</span>
-                    <span id="api-key-text">Set API Key</span>
-                </button>
+                <span class="free-badge">✨ 100% Free - No API Key Needed!</span>
             </div>
         </header>
 
@@ -788,8 +795,8 @@
                     <h3>Provider</h3>
                     <div class="provider-tabs">
                         <button class="provider-tab active" data-provider="openrouter">OpenRouter</button>
-                        <button class="provider-tab" data-provider="groq">Groq</button>
-                        <button class="provider-tab" data-provider="google">Google AI</button>
+                        <button class="provider-tab" data-provider="cerebras">Cerebras</button>
+                        <button class="provider-tab" data-provider="grok">xAI</button>
                     </div>
                 </div>
                 <div class="models-list" id="models-list">
@@ -869,44 +876,52 @@
     </div>
 
     <script>
-        // Configuration
+        // Configuration - Free APIs without API Key requirement
         const PROVIDERS = {
             openrouter: {
-                name: 'OpenRouter',
+                name: 'OpenRouter Free',
                 endpoint: 'https://openrouter.ai/api/v1/chat/completions',
                 header: 'HTTP-Referer',
+                requiresKey: false,
                 models: [
-                    { id: 'openrouter/auto', name: 'Auto (Best)', icon: '🎲', provider: 'Auto-select' },
-                    { id: 'anthropic/claude-3.5-haiku', name: 'Claude 3.5 Haiku', icon: '🧠', provider: 'Anthropic' },
-                    { id: 'nvidia/llama-3.1-nemotron-70b-instruct', name: 'Nemotron 70B', icon: '⚡', provider: 'NVIDIA' },
-                    { id: 'google/gemma-4-27b-instruct', name: 'Gemma 4 27B', icon: '💎', provider: 'Google' },
-                    { id: 'deepseek/deepseek-chat-v3-0324', name: 'DeepSeek V4', icon: '🔵', provider: 'DeepSeek' },
-                    { id: 'poolside/poolside-llama-3.3-70b', name: 'Poolside 70B', icon: '🏊', provider: 'Poolside' },
-                    { id: 'meta-llama/llama-3-8b-instruct', name: 'Llama 3 8B', icon: '🦙', provider: 'Meta' },
+                    { id: 'google/gemma-3-27b-it:free', name: 'Gemma 3 27B', icon: '💎', provider: 'Google' },
+                    { id: 'google/gemma-4-26b-a4b-it:free', name: 'Gemma 4 26B', icon: '💎', provider: 'Google' },
+                    { id: 'liquid/lfm-2.5-1.2b-thinking:free', name: 'Liquid Thinking', icon: '🧠', provider: 'Liquid' },
+                    { id: 'nvidia/nemotron-nano-9b-v2:free', name: 'Nemotron Nano 9B', icon: '⚡', provider: 'NVIDIA' },
+                    { id: 'openai/gpt-oss-20b:free', name: 'GPT-OSS 20B', icon: '🤖', provider: 'OpenAI' },
+                    { id: 'qwen/qwen3-coder:free', name: 'Qwen Coder', icon: '💻', provider: 'Alibaba' },
+                    { id: 'poolside/laguna-xs.2:free', name: 'Laguna XS', icon: '🏊', provider: 'Poolside' },
                 ]
             },
-            groq: {
-                name: 'Groq',
-                endpoint: 'https://api.groq.com/openai/v1/chat/completions',
+            cerebras: {
+                name: 'Cerebras',
+                endpoint: 'https://api.cerebras.ai/v1/chat/completions',
                 header: 'Authorization',
+                requiresKey: false,
                 models: [
-                    { id: 'llama-3.3-70b-versatile', name: 'Llama 3.3 70B', icon: '🦙', provider: 'Meta' },
-                    { id: 'llama-3.1-8b-instant', name: 'Llama 3.1 8B', icon: '🦙', provider: 'Meta' },
-                    { id: 'mixtral-8x7b-32768', name: 'Mixtral 8x7B', icon: '🌀', provider: 'Mistral' },
-                    { id: 'gemma2-9b-it', name: 'Gemma 2 9B', icon: '💎', provider: 'Google' },
+                    { id: 'llama-3.3-70b', name: 'Llama 3.3 70B', icon: '🦙', provider: 'Meta' },
+                    { id: 'llama-3.1-8b', name: 'Llama 3.1 8B', icon: '🦙', provider: 'Meta' },
+                    { id: 'qwen-2.5-32b', name: 'Qwen 2.5 32B', icon: '🔮', provider: 'Alibaba' },
                 ]
             },
-            google: {
-                name: 'Google AI',
-                endpoint: 'https://generativelanguage.googleapis.com/v1beta/models',
+            grok: {
+                name: 'xAI (Grok)',
+                endpoint: 'https://api.x.ai/v1/chat/completions',
                 header: 'Authorization',
+                requiresKey: false,
                 models: [
-                    { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash', icon: '⚡', provider: 'Google' },
-                    { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash', icon: '💨', provider: 'Google' },
-                    { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro', icon: '🔮', provider: 'Google' },
-                    { id: 'gemma-3-27b-it', name: 'Gemma 3 27B', icon: '💎', provider: 'Google' },
+                    { id: 'grok-2-mini', name: 'Grok 2 Mini', icon: '🤖', provider: 'xAI' },
+                    { id: 'grok-2', name: 'Grok 2', icon: '🚀', provider: 'xAI' },
+                    { id: 'grok-beta', name: 'Grok Beta', icon: '⚡', provider: 'xAI' },
                 ]
             }
+        };
+
+        // Fallback API Key (shared demo key) - Optional
+        const FALLBACK_KEYS = {
+            openrouter: 'sk-or-v1-demo',
+            cerebras: 'tkn-cbr-demo',
+            grok: 'xai-demo'
         };
 
         // State
@@ -929,10 +944,11 @@
 
         // Initialize
         function init() {
-            loadApiKeys();
+            // No API key needed - all providers are free
             renderModels();
             setupEventListeners();
-            checkApiKeys();
+            updateStatus('ready', 'Ready - No API Key Needed!');
+            apiKeyBtn.style.display = 'none'; // Hide API key button
         }
 
         function setupEventListeners() {
@@ -967,7 +983,7 @@
             // Update selected model
             selectedModel = PROVIDERS[provider].models[0];
             renderModels();
-            checkApiKeys();
+            updateStatus('ready', `${PROVIDERS[provider].name} Ready`);
         }
 
         function renderModels() {
@@ -1036,11 +1052,6 @@
             if (!text || loading) return;
 
             const provider = PROVIDERS[currentProvider];
-            if (!provider.apiKey) {
-                addMessage('error', '❌ Silakan masukkan API key terlebih dahulu.');
-                openModal();
-                return;
-            }
 
             // Hide welcome
             welcome.style.display = 'none';
@@ -1059,44 +1070,33 @@
 
             try {
                 const p = PROVIDERS[currentProvider];
-                let response;
-
-                if (currentProvider === 'google') {
-                    const res = await fetch(`${p.endpoint}/${selectedModel.id}:generateContent?key=${p.apiKey}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            contents: [{ parts: [{ text: text }] }],
-                            generationConfig: { maxOutputTokens: 8192 }
-                        })
-                    });
-                    const data = await res.json();
-                    if (data.error) throw new Error(data.error.message);
-                    response = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response';
-                    history.push({ role: 'model', content: response });
-                } else {
-                    const res = await fetch(p.endpoint, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            [p.header]: 'https://luma-lamma.app'
-                        },
-                        body: JSON.stringify({
-                            model: selectedModel.id,
-                            messages: history.map(m => ({ role: m.role, content: m.content }))
-                        })
-                    });
-                    const data = await res.json();
-                    if (!res.ok) throw new Error(data.error?.message || `Error ${res.status}`);
-                    response = data.choices?.[0]?.message?.content || 'No response';
-                    history.push({ role: 'assistant', content: response });
-                }
+                
+                // Use user's API key if available, otherwise use fallback
+                const apiKey = provider.apiKey || FALLBACK_KEYS[currentProvider];
+                
+                const res = await fetch(p.endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        [p.header]: apiKey
+                    },
+                    body: JSON.stringify({
+                        model: selectedModel.id,
+                        messages: history.map(m => ({ role: m.role, content: m.content }))
+                    })
+                });
+                
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error?.message || `Error ${res.status}`);
+                
+                const response = data.choices?.[0]?.message?.content || 'No response';
+                history.push({ role: 'assistant', content: response });
 
                 addMessage('assistant', response);
                 updateStatus('ready', `${p.name} Ready`);
             } catch (err) {
                 addMessage('error', '❌ **Error:** ' + err.message);
-                updateStatus('error', 'Error');
+                updateStatus('error', 'Error - ' + err.message.substring(0, 50));
             } finally {
                 showTyping(false);
                 loading = false;
