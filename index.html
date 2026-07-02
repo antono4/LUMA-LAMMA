@@ -26,16 +26,9 @@
             --border: rgba(255, 255, 255, 0.1);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        html, body {
-            height: 100%;
-            overflow: hidden;
-        }
+        html, body { height: 100%; overflow: hidden; }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -48,8 +41,6 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
-            max-width: 100%;
-            margin: 0 auto;
             background: var(--bg-secondary);
         }
 
@@ -61,14 +52,6 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            flex-shrink: 0;
-            z-index: 100;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
         }
 
         .logo {
@@ -86,7 +69,6 @@
             align-items: center;
             justify-content: center;
             font-size: 18px;
-            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
         }
 
         .logo-text {
@@ -95,12 +77,6 @@
             background: linear-gradient(135deg, var(--text-primary), var(--accent-light));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
         }
 
         .status-badge {
@@ -114,17 +90,13 @@
         }
 
         .status-badge.loading {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(139, 92, 246, 0.2));
-            border-color: rgba(245, 158, 11, 0.3);
+            background: rgba(245, 158, 11, 0.2);
+            border-color: var(--warning);
             color: var(--warning);
         }
 
-        /* Main Content */
-        .main {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
+        /* Main */
+        .main { display: flex; flex: 1; overflow: hidden; }
 
         /* Sidebar */
         .sidebar {
@@ -133,7 +105,6 @@
             border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
-            flex-shrink: 0;
         }
 
         .sidebar-header {
@@ -161,27 +132,11 @@
             cursor: pointer;
         }
 
-        .model-select:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
+        .model-select:focus { outline: none; border-color: var(--accent); }
+        .model-select option { background: var(--bg-secondary); }
 
-        .model-select option {
-            background: var(--bg-secondary);
-        }
-
-        .models-info {
-            flex: 1;
-            padding: 12px 16px;
-            overflow-y: auto;
-        }
-
-        .models-info h4 {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-        }
+        .models-info { padding: 16px; flex: 1; overflow-y: auto; }
+        .models-info h4 { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
 
         .model-item {
             display: flex;
@@ -193,17 +148,6 @@
             margin-bottom: 6px;
             font-size: 12px;
             color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .model-item:hover {
-            background: var(--bg-tertiary);
-        }
-
-        .model-item.selected {
-            background: rgba(139, 92, 246, 0.15);
-            border: 1px solid rgba(139, 92, 246, 0.3);
         }
 
         .sidebar-footer {
@@ -220,46 +164,22 @@
             color: var(--text-secondary);
             font-size: 13px;
             cursor: pointer;
-            transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
         }
 
-        .clear-chat-btn:hover {
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-        }
+        .clear-chat-btn:hover { background: var(--bg-secondary); color: var(--text-primary); }
 
         /* Chat Area */
-        .chat-area {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
+        .chat-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 
-        .chat-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 24px;
-        }
+        .chat-container { flex: 1; overflow-y: auto; padding: 24px; }
+        .chat-container::-webkit-scrollbar { width: 6px; }
+        .chat-container::-webkit-scrollbar-thumb { background: var(--bg-hover); border-radius: 3px; }
 
-        .chat-container::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .chat-container::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .chat-container::-webkit-scrollbar-thumb {
-            background: var(--bg-hover);
-            border-radius: 3px;
-        }
-
-        /* Welcome Screen */
+        /* Welcome */
         .welcome {
             display: flex;
             flex-direction: column;
@@ -290,19 +210,9 @@
             -webkit-text-fill-color: transparent;
         }
 
-        .welcome p {
-            color: var(--text-secondary);
-            font-size: 16px;
-            max-width: 500px;
-            margin-bottom: 32px;
-        }
+        .welcome p { color: var(--text-secondary); font-size: 16px; max-width: 500px; margin-bottom: 32px; }
 
-        .welcome-features {
-            display: flex;
-            gap: 24px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
+        .welcome-features { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; }
 
         .welcome-feature {
             display: flex;
@@ -313,10 +223,6 @@
             border-radius: 12px;
             font-size: 14px;
             color: var(--text-secondary);
-        }
-
-        .welcome-feature span:first-child {
-            font-size: 18px;
         }
 
         /* Messages */
@@ -332,9 +238,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .message.user {
-            flex-direction: row-reverse;
-        }
+        .message.user { flex-direction: row-reverse; }
 
         .message-avatar {
             width: 36px;
@@ -344,25 +248,13 @@
             align-items: center;
             justify-content: center;
             font-size: 16px;
-            flex-shrink: 0;
         }
 
-        .message.user .message-avatar {
-            background: linear-gradient(135deg, var(--accent), #ec4899);
-        }
+        .message.user .message-avatar { background: linear-gradient(135deg, var(--accent), #ec4899); }
+        .message.assistant .message-avatar { background: var(--bg-tertiary); }
 
-        .message.assistant .message-avatar {
-            background: var(--bg-tertiary);
-        }
-
-        .message-content {
-            max-width: 75%;
-            min-width: 100px;
-        }
-
-        .message.user .message-content {
-            text-align: right;
-        }
+        .message-content { max-width: 75%; }
+        .message.user .message-content { text-align: right; }
 
         .message-bubble {
             padding: 14px 18px;
@@ -389,7 +281,6 @@
             color: var(--error);
         }
 
-        /* Markdown Styles */
         .message-bubble pre {
             background: var(--bg-primary);
             padding: 16px;
@@ -401,49 +292,20 @@
 
         .message-bubble code {
             font-family: 'Fira Code', 'Monaco', monospace;
-        }
-
-        .message-bubble p code {
             background: var(--bg-primary);
             padding: 2px 6px;
             border-radius: 4px;
-            font-size: 13px;
         }
 
-        .message-bubble p {
-            margin-bottom: 12px;
-        }
-
-        .message-bubble p:last-child {
-            margin-bottom: 0;
-        }
-
-        .message-bubble ul, .message-bubble ol {
-            margin: 12px 0;
-            padding-left: 24px;
-        }
-
-        .message-bubble li {
-            margin-bottom: 6px;
-        }
-
-        .message-bubble strong {
-            font-weight: 600;
-        }
-
-        .message-bubble a {
-            color: var(--accent-light);
-            text-decoration: none;
-        }
-
-        .message-bubble a:hover {
-            text-decoration: underline;
-        }
+        .message-bubble p { margin-bottom: 8px; }
+        .message-bubble ul, .message-bubble ol { margin: 8px 0; padding-left: 24px; }
+        .message-bubble strong { font-weight: 600; }
 
         /* Loading */
         .loading-area {
             padding: 16px 24px;
             border-top: 1px solid var(--border);
+            display: none;
         }
 
         .loading-bar {
@@ -456,8 +318,8 @@
         .loading-bar-fill {
             height: 100%;
             background: linear-gradient(90deg, var(--accent), #ec4899);
-            border-radius: 2px;
             transition: width 0.3s ease;
+            width: 0%;
         }
 
         .loading-text {
@@ -467,7 +329,7 @@
             text-align: center;
         }
 
-        /* Input Area */
+        /* Input */
         .input-area {
             padding: 16px 24px 24px;
             background: var(--bg-secondary);
@@ -481,7 +343,6 @@
             border: 1px solid var(--border);
             border-radius: 16px;
             padding: 6px;
-            transition: all 0.2s;
         }
 
         .input-wrapper:focus-within {
@@ -503,13 +364,8 @@
             line-height: 1.5;
         }
 
-        .input-wrapper textarea:focus {
-            outline: none;
-        }
-
-        .input-wrapper textarea::placeholder {
-            color: var(--text-muted);
-        }
+        .input-wrapper textarea:focus { outline: none; }
+        .input-wrapper textarea::placeholder { color: var(--text-muted); }
 
         .send-btn {
             width: 44px;
@@ -520,21 +376,13 @@
             color: white;
             font-size: 18px;
             cursor: pointer;
-            transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .send-btn:hover:not(:disabled) {
-            background: var(--accent-hover);
-            transform: scale(1.05);
-        }
-
-        .send-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+        .send-btn:hover:not(:disabled) { background: var(--accent-hover); }
+        .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         /* Status Bar */
         .status-bar {
@@ -548,12 +396,6 @@
             color: var(--text-muted);
         }
 
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
         .status-dot {
             width: 8px;
             height: 8px;
@@ -561,63 +403,31 @@
             background: var(--text-muted);
         }
 
-        .status-dot.ready {
-            background: var(--success);
-        }
+        .status-dot.ready { background: var(--success); }
+        .status-dot.error { background: var(--error); }
+        .status-dot.loading { background: var(--warning); animation: pulse 1s infinite; }
 
-        .status-dot.error {
-            background: var(--error);
-        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
-        .status-dot.loading {
-            background: var(--warning);
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* Responsive */
         @media (max-width: 768px) {
-            .sidebar {
-                display: none;
-            }
-
-            .welcome h1 {
-                font-size: 24px;
-            }
-
-            .welcome-features {
-                flex-direction: column;
-                gap: 12px;
-            }
-
-            .message-content {
-                max-width: 90%;
-            }
+            .sidebar { display: none; }
+            .welcome h1 { font-size: 24px; }
+            .welcome-features { flex-direction: column; gap: 12px; }
+            .message-content { max-width: 90%; }
         }
     </style>
 </head>
 <body>
     <div class="app">
-        <!-- Header -->
         <header class="header">
-            <div class="header-left">
-                <div class="logo">
-                    <div class="logo-icon">🦙</div>
-                    <span class="logo-text">LUMA-LAMMA</span>
-                </div>
+            <div class="logo">
+                <div class="logo-icon">🦙</div>
+                <span class="logo-text">LUMA-LAMMA</span>
             </div>
-            <div class="header-right">
-                <span class="status-badge" id="status-badge">✨ 100% Free - Offline AI!</span>
-            </div>
+            <span class="status-badge" id="status-badge">✨ 100% Free - Offline AI!</span>
         </header>
 
-        <!-- Main -->
         <main class="main">
-            <!-- Sidebar -->
             <aside class="sidebar">
                 <div class="sidebar-header">
                     <h3>Model</h3>
@@ -631,32 +441,21 @@
                 </div>
                 <div class="models-info">
                     <h4>📥 Model Info</h4>
-                    <div class="model-item selected" id="model-info">
+                    <div class="model-item" id="model-info">
                         <span>⏳ Selecting model...</span>
                     </div>
                     <h4 style="margin-top: 16px;">💡 Tips</h4>
-                    <div class="model-item">
-                        <span>🖥️</span>
-                        <span>First time? Model will be downloaded</span>
-                    </div>
-                    <div class="model-item">
-                        <span>💾</span>
-                        <span>Models are cached locally</span>
-                    </div>
-                    <div class="model-item">
-                        <span>🔄</span>
-                        <span>Smaller models = faster</span>
-                    </div>
+                    <div class="model-item"><span>🖥️</span><span>First time? Model will be downloaded</span></div>
+                    <div class="model-item"><span>💾</span><span>Models are cached locally</span></div>
+                    <div class="model-item"><span>🔄</span><span>Smaller models = faster</span></div>
                 </div>
                 <div class="sidebar-footer">
                     <button class="clear-chat-btn" onclick="clearChat()">
-                        <span>🗑️</span>
-                        <span>Clear Chat</span>
+                        <span>🗑️</span><span>Clear Chat</span>
                     </button>
                 </div>
             </aside>
 
-            <!-- Chat Area -->
             <section class="chat-area">
                 <div class="chat-container" id="chat-container">
                     <div class="welcome" id="welcome">
@@ -672,72 +471,46 @@
                     </div>
                 </div>
 
-                <!-- Loading Area -->
-                <div class="loading-area" id="loading-area" style="display: none;">
+                <div class="loading-area" id="loading-area">
                     <div class="loading-bar">
-                        <div class="loading-bar-fill" id="loading-bar-fill" style="width: 0%"></div>
+                        <div class="loading-bar-fill" id="loading-bar-fill"></div>
                     </div>
-                    <div class="loading-text" id="loading-text">Loading model...</div>
+                    <div class="loading-text" id="loading-text">Loading...</div>
                 </div>
 
-                <!-- Input -->
                 <div class="input-area">
                     <div class="input-wrapper">
-                        <textarea 
-                            id="message-input" 
-                            placeholder="Ketik pesan... (Shift+Enter untuk baris baru)"
-                            rows="1"
-                        ></textarea>
+                        <textarea id="message-input" placeholder="Ketik pesan... (Shift+Enter untuk baris baru)" rows="1"></textarea>
                         <button class="send-btn" id="send-btn" onclick="sendMessage()">➤</button>
                     </div>
                 </div>
 
-                <!-- Status Bar -->
                 <div class="status-bar">
-                    <div class="status-indicator">
-                        <div class="status-dot" id="status-dot"></div>
-                        <span id="status-text">Ready - Select a model</span>
-                    </div>
+                    <div class="status-dot" id="status-dot"></div>
+                    <span id="status-text">Loading WebLLM...</span>
                 </div>
             </section>
         </main>
     </div>
 
-    <!-- WebLLM SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/@mlc.ai/web-llm@latest/dist/webllm.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/@mlc.ai/web-llm@0.2.11/dist/webllm.js"></script>
     <script>
         // Model configurations
         const MODELS = {
             'Llama-3.2-3B-Instruct-q4f16_dev_1c': {
-                name: 'Llama 3.2 3B',
-                size: '~2GB',
-                desc: 'Meta\'s latest - great balance',
-                icon: '🦙'
+                name: 'Llama 3.2 3B', size: '~2GB', desc: "Meta's latest - great balance", icon: '🦙'
             },
             'Phi-3.5-mini-instruct-q4f16_1_0': {
-                name: 'Phi-3.5 Mini',
-                size: '~2.5GB',
-                desc: 'Microsoft - very fast',
-                icon: '📘'
+                name: 'Phi-3.5 Mini', size: '~2.5GB', desc: 'Microsoft - very fast', icon: '📘'
             },
             'Qwen2.5-7B-Instruct-q4f16_1_0': {
-                name: 'Qwen 2.5 7B',
-                size: '~4.5GB',
-                desc: 'Alibaba - large & capable',
-                icon: '🔮'
+                name: 'Qwen 2.5 7B', size: '~4.5GB', desc: 'Alibaba - large & capable', icon: '🔮'
             },
             'Qwen2.5-3B-Instruct-q4f16_1_0': {
-                name: 'Qwen 2.5 3B',
-                size: '~2GB',
-                desc: 'Alibaba - fast & capable',
-                icon: '🔮'
+                name: 'Qwen 2.5 3B', size: '~2GB', desc: 'Alibaba - fast & capable', icon: '🔮'
             },
             'gemma-2-2b-it-q4f16_1_0': {
-                name: 'Gemma 2 2B',
-                size: '~1.5GB',
-                desc: 'Google - smallest & fastest',
-                icon: '💎'
+                name: 'Gemma 2 2B', size: '~1.5GB', desc: 'Google - smallest & fastest', icon: '💎'
             }
         };
 
@@ -747,9 +520,8 @@
         let isLoading = false;
         let isReady = false;
         let history = [];
-        let loadingProgress = 0;
 
-        // DOM Elements
+        // DOM
         const chatContainer = document.getElementById('chat-container');
         const welcome = document.getElementById('welcome');
         const messageInput = document.getElementById('message-input');
@@ -763,15 +535,28 @@
         const loadingBarFill = document.getElementById('loading-bar-fill');
         const loadingText = document.getElementById('loading-text');
 
-        // Initialize
+        // Init
         async function init() {
             updateModelInfo();
             setupEventListeners();
+            
+            // Wait for WebLLM to load
+            let attempts = 0;
+            while (typeof WebLLM === 'undefined' && attempts < 100) {
+                await new Promise(r => setTimeout(r, 100));
+                attempts++;
+            }
+            
+            if (typeof WebLLM === 'undefined') {
+                updateStatus('error', 'WebLLM failed to load');
+                addMessage('error', '❌ **Error:** WebLLM failed to load. Please check:\n\n1. Use Chrome 113+ or Edge 113+\n2. Enable WebGPU in chrome://gpu\n3. Refresh the page');
+                return;
+            }
+            
             await loadModel(selectedModel);
         }
 
         function setupEventListeners() {
-            // Model select
             modelSelect.addEventListener('change', async (e) => {
                 if (isLoading) return;
                 selectedModel = e.target.value;
@@ -779,13 +564,11 @@
                 await loadModel(selectedModel);
             });
 
-            // Auto-resize textarea
             messageInput.addEventListener('input', () => {
                 messageInput.style.height = 'auto';
                 messageInput.style.height = Math.min(messageInput.scrollHeight, 150) + 'px';
             });
 
-            // Enter to send
             messageInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
@@ -796,53 +579,52 @@
 
         function updateModelInfo() {
             const model = MODELS[selectedModel];
-            modelInfo.innerHTML = `
-                <span>${model.icon}</span>
-                <span>${model.name} - ${model.size}</span>
-            `;
-            modelInfo.innerHTML += `<br><small style="color: var(--text-muted)">${model.desc}</small>`;
+            modelInfo.innerHTML = `<span>${model.icon}</span><span>${model.name} - ${model.size}</span><br><small style="color: var(--text-muted)">${model.desc}</small>`;
         }
 
         function updateStatus(status, text) {
             statusDot.className = 'status-dot ' + status;
             statusText.textContent = text;
+            statusBadge.classList.toggle('loading', status === 'loading');
+            if (status === 'loading') {
+                statusBadge.textContent = '⏳ Downloading model...';
+            } else if (status === 'ready') {
+                statusBadge.textContent = '✨ 100% Free - Offline AI!';
+            } else {
+                statusBadge.textContent = '❌ Error';
+            }
         }
 
-        function showLoading(show, progress = 0, text = 'Loading...') {
+        function showLoading(show) {
             loadingArea.style.display = show ? 'block' : 'none';
-            loadingBarFill.style.width = progress + '%';
-            loadingText.textContent = text;
-            
-            if (show) {
-                statusBadge.classList.add('loading');
-                statusBadge.textContent = '⏳ Downloading model...';
-            } else {
-                statusBadge.classList.remove('loading');
-                statusBadge.textContent = '✨ 100% Free - Offline AI!';
-            }
         }
 
         async function loadModel(modelId) {
             if (isLoading) return;
             
             isLoading = true;
+            showLoading(true);
+            loadingBarFill.style.width = '0%';
+            loadingText.textContent = 'Initializing...';
             updateStatus('loading', 'Loading model...');
-            showLoading(true, 0, 'Initializing WebLLM...');
             sendBtn.disabled = true;
             messageInput.disabled = true;
 
             try {
-                // Create worker
-                worker = await WebLLM.createWorker(
-                    modelId,
-                    '', // Use default progress callback
-                    (progress) => {
-                        const percent = Math.round(progress.progress * 100);
-                        loadingProgress = percent;
-                        showLoading(true, percent, `Loading: ${percent}% - ${progress.text || ''}`);
-                        updateStatus('loading', `Loading: ${percent}%`);
-                    }
-                );
+                // Close existing worker
+                if (worker) {
+                    await worker.terminate();
+                    worker = null;
+                }
+
+                worker = new WebLLM.Worker();
+                
+                await worker.reload(modelId, (progress) => {
+                    const percent = Math.round(progress.progress * 100);
+                    loadingBarFill.style.width = percent + '%';
+                    loadingText.textContent = `${percent}% - ${progress.text || 'Loading...'}`;
+                    updateStatus('loading', `Loading: ${percent}%`);
+                });
                 
                 isReady = true;
                 showLoading(false);
@@ -855,7 +637,7 @@
                 isReady = false;
                 showLoading(false);
                 updateStatus('error', 'Error: ' + error.message);
-                addMessage('error', '❌ **Error loading model:** ' + error.message + '\n\nPlease refresh and try again.');
+                addMessage('error', '❌ **Error loading model:**\n\n' + error.message + '\n\nPlease refresh and try again.');
             } finally {
                 isLoading = false;
             }
@@ -865,35 +647,33 @@
             const text = messageInput.value.trim();
             if (!text || !isReady || isLoading) return;
 
-            // Hide welcome
             welcome.style.display = 'none';
-
-            // Add user message
             addMessage('user', text);
             history.push({ role: 'user', content: text });
             messageInput.value = '';
             messageInput.style.height = 'auto';
 
-            // Show loading
-            updateStatus('loading', 'Generating response...');
+            updateStatus('loading', 'Generating...');
             sendBtn.disabled = true;
 
             try {
-                // Build prompt
-                const prompt = buildPrompt(history);
+                const lastMsgId = addMessage('assistant', 'Generating response...');
                 
-                // Generate response
-                let response = '';
-                
-                await worker.generate(prompt, (chunk) => {
-                    response += chunk;
-                    // Update last message with streaming
-                    updateLastMessage(response);
+                const reply = await worker.chat.completions.create({
+                    messages: history.map(m => ({ role: m.role, content: m.content })),
+                    temperature: 0.7,
+                    max_tokens: 512
                 });
 
-                // Add to history
-                history.push({ role: 'assistant', content: response });
+                const response = reply.choices[0].message.content;
                 
+                // Update the last message
+                const lastMsg = chatContainer.querySelector('.message.assistant:last-child .message-bubble');
+                if (lastMsg) {
+                    lastMsg.innerHTML = formatMessage(response);
+                }
+                
+                history.push({ role: 'assistant', content: response });
                 updateStatus('ready', 'Ready - Ask me anything!');
                 
             } catch (error) {
@@ -905,58 +685,34 @@
             }
         }
 
-        function buildPrompt(messages) {
-            // Simple prompt format
-            let prompt = '';
-            for (const msg of messages) {
-                if (msg.role === 'user') {
-                    prompt += `<|user|>\n${msg.content}\n`;
-                } else {
-                    prompt += `<|assistant|>\n${msg.content}\n`;
-                }
-            }
-            prompt += '<|assistant|>\n';
-            return prompt;
-        }
-
         function addMessage(role, content) {
             const div = document.createElement('div');
-            div.className = `message ${role}`;
-            div.id = 'msg-' + Date.now();
-
+            div.className = 'message ' + role;
             const avatar = role === 'user' ? '👤' : '🤖';
             
             div.innerHTML = `
                 <div class="message-avatar">${avatar}</div>
                 <div class="message-content">
-                    <div class="message-bubble">${escapeHtml(content)}</div>
+                    <div class="message-bubble">${role === 'user' ? escapeHtml(content) : formatMessage(content)}</div>
                 </div>
             `;
 
             chatContainer.appendChild(div);
             chatContainer.scrollTop = chatContainer.scrollHeight;
-            
             return div.id;
         }
 
-        function updateLastMessage(content) {
-            const messages = chatContainer.querySelectorAll('.message.assistant');
-            const lastMsg = messages[messages.length - 1];
-            if (lastMsg) {
-                const bubble = lastMsg.querySelector('.message-bubble');
-                bubble.innerHTML = escapeHtml(content);
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-            }
+        function formatMessage(text) {
+            return escapeHtml(text)
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/`(.*?)`/g, '<code>$1</code>')
+                .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
         }
 
         function escapeHtml(text) {
             const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML
-                .replace(/\n/g, '<br>')
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                .replace(/`(.*?)`/g, '<code>$1</code>')
-                .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+            div.textContent = text || '';
+            return div.innerHTML;
         }
 
         function clearChat() {
@@ -967,7 +723,6 @@
             updateStatus('ready', isReady ? 'Ready - Ask me anything!' : 'Select a model');
         }
 
-        // Start
         init();
     </script>
 </body>
