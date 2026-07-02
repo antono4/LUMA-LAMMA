@@ -1,5 +1,7 @@
-# Ollama - No external dependencies needed!
-flask==3.0.0
-flask-cors==4.0.0
-requests==2.31.0
+# LUMA-LAMMA Dependencies
+# Minimal - Flask backend for local Ollama support
+
+flask>=3.0.0
+flask-cors>=4.0.0
+requests>=2.31.0
 
