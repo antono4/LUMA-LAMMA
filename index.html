@@ -74,6 +74,11 @@
             border-color: var(--warning);
             color: var(--warning);
         }
+        .status-badge.error {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: var(--error);
+            color: var(--error);
+        }
         .main { display: flex; flex: 1; overflow: hidden; }
         .sidebar {
             width: 280px; background: var(--bg-primary);
@@ -92,7 +97,7 @@
             background: var(--bg-secondary); border: 1px solid var(--border);
             border-radius: 6px; color: var(--text-secondary);
             font-size: 11px; font-weight: 500;
-            cursor: pointer; text-align: center;
+            cursor: pointer; text-align: center; transition: all 0.2s;
         }
         .provider-tab:hover { background: var(--bg-tertiary); }
         .provider-tab.active { background: var(--accent); border-color: var(--accent); color: white; }
@@ -112,6 +117,7 @@
             border-radius: 8px; margin-bottom: 6px;
             font-size: 12px; color: var(--text-secondary);
         }
+        .model-item .check { color: var(--success); }
         .sidebar-footer { padding: 16px; border-top: 1px solid var(--border); }
         .clear-chat-btn {
             width: 100%; padding: 10px; background: transparent;
@@ -173,17 +179,22 @@
         .message.error .message-bubble {
             background: rgba(239, 68, 68, 0.1);
             border: 1px solid var(--error); color: var(--error);
+            white-space: pre-wrap;
         }
         .message-bubble pre {
             background: var(--bg-primary); padding: 16px;
             border-radius: 8px; overflow-x: auto; margin: 12px 0;
+            text-align: left;
         }
         .message-bubble code {
             font-family: 'Fira Code', 'Monaco', monospace;
             background: var(--bg-primary); padding: 2px 6px; border-radius: 4px;
+            font-size: 13px;
         }
+        .message-bubble pre code { background: transparent; padding: 0; }
         .message-bubble p { margin-bottom: 8px; }
-        .message-bubble ul, .message-bubble ol { margin: 8px 0; padding-left: 24px; }
+        .message-bubble p:last-child { margin-bottom: 0; }
+        .message-bubble ul, .message-bubble ol { margin: 8px 0; padding-left: 24px; text-align: left; }
         .message-bubble strong { font-weight: 600; }
         .input-area {
             padding: 16px 24px 24px; background: var(--bg-secondary);
@@ -210,8 +221,9 @@
             border: none; border-radius: 12px; color: white;
             font-size: 18px; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
         }
-        .send-btn:hover:not(:disabled) { background: var(--accent-hover); }
+        .send-btn:hover:not(:disabled) { background: var(--accent-hover); transform: scale(1.05); }
         .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .status-bar {
             display: flex; align-items: center; justify-content: center;
@@ -221,26 +233,12 @@
         }
         .status-dot {
             width: 8px; height: 8px; border-radius: 50%;
-            background: var(--text-muted);
+            background: var(--text-muted); margin-right: 6px;
         }
         .status-dot.ready { background: var(--success); }
         .status-dot.error { background: var(--error); }
         .status-dot.loading { background: var(--warning); animation: pulse 1s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        .loading-area {
-            padding: 16px 24px; border-top: 1px solid var(--border); display: none;
-        }
-        .loading-area.active { display: block; }
-        .loading-bar {
-            height: 4px; background: var(--bg-tertiary);
-            border-radius: 2px; overflow: hidden;
-        }
-        .loading-bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent), #ec4899);
-            transition: width 0.3s ease; width: 0%;
-        }
-        .loading-text { margin-top: 8px; font-size: 12px; color: var(--text-muted); text-align: center; }
         @media (max-width: 768px) {
             .sidebar { display: none; }
             .welcome h1 { font-size: 24px; }
@@ -256,8 +254,29 @@
                 <div class="logo-icon">🦙</div>
                 <span class="logo-text">LUMA-LAMMA</span>
             </div>
-            <span class="status-badge" id="status-badge">✨ 100% Free - No API Key!</span>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <button class="clear-chat-btn" onclick="showApiKeyModal()" style="padding: 6px 12px; font-size: 12px;">
+                    🔑 <span id="api-key-status">Set API Key</span>
+                </button>
+                <span class="status-badge" id="status-badge">✨ 100% Free!</span>
+            </div>
         </header>
+        
+        <!-- API Key Modal -->
+        <div id="api-key-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;">
+            <div style="background: var(--bg-secondary); padding: 24px; border-radius: 16px; max-width: 500px; width: 90%; border: 1px solid var(--border);">
+                <h3 style="margin-bottom: 8px;">🔑 Set Groq API Key</h3>
+                <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 16px;">
+                    Get free API key from <a href="https://console.groq.com/keys" target="_blank" style="color: var(--accent-light);">console.groq.com</a> (FREE!)
+                </p>
+                <input type="password" id="api-key-input" placeholder="Paste your API key here..." 
+                    style="width: 100%; padding: 12px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-size: 14px; margin-bottom: 12px;">
+                <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                    <button onclick="hideApiKeyModal()" class="clear-chat-btn" style="padding: 8px 16px;">Cancel</button>
+                    <button onclick="saveApiKey()" style="padding: 8px 16px; background: var(--accent); border: none; border-radius: 8px; color: white; cursor: pointer;">Save</button>
+                </div>
+            </div>
+        </div>
 
         <main class="main">
             <aside class="sidebar">
@@ -265,17 +284,16 @@
                     <h3>Provider</h3>
                     <div class="provider-tabs">
                         <button class="provider-tab active" data-provider="groq">Groq</button>
-                        <button class="provider-tab" data-provider="openwebui">Ollama</button>
+                        <button class="provider-tab" data-provider="ollama">Ollama</button>
                     </div>
                     <h3 style="margin-top: 16px;">Model</h3>
-                    <select class="model-select" id="model-select">
-                        <!-- Models will be populated by JS -->
-                    </select>
+                    <select class="model-select" id="model-select"></select>
                 </div>
                 <div class="models-info">
                     <h4>ℹ️ Info</h4>
-                    <div class="model-item"><span>⚡</span><span>Groq: Ultra fast inference</span></div>
+                    <div class="model-item"><span class="check">✓</span><span>Groq: Ultra fast inference</span></div>
                     <div class="model-item"><span>🖥️</span><span>Ollama: Run locally</span></div>
+                    <div class="model-item"><span>💰</span><span>No API key needed!</span></div>
                 </div>
                 <div class="sidebar-footer">
                     <button class="clear-chat-btn" onclick="clearChat()">
@@ -289,20 +307,13 @@
                     <div class="welcome" id="welcome">
                         <div class="welcome-icon">🦙</div>
                         <h1>Welcome to LUMA-LAMMA</h1>
-                        <p>Free AI Chat - Pilih provider dan mulai chat!</p>
+                        <p>Free AI Chat - Pilih model dan mulai chat!</p>
                         <div class="welcome-features">
                             <div class="welcome-feature"><span>💰</span> 100% Free</div>
                             <div class="welcome-feature"><span>⚡</span> Fast</div>
                             <div class="welcome-feature"><span>🔒</span> Private</div>
                         </div>
                     </div>
-                </div>
-
-                <div class="loading-area" id="loading-area">
-                    <div class="loading-bar">
-                        <div class="loading-bar-fill" id="loading-bar-fill"></div>
-                    </div>
-                    <div class="loading-text" id="loading-text">Loading...</div>
                 </div>
 
                 <div class="input-area">
@@ -321,14 +332,20 @@
     </div>
 
     <script>
-        // Free APIs that work without user API key
-        // These are public endpoints (may have rate limits)
+        // Configuration
+        const API_BASE = ''; // Same origin
+        
+        // State
+        let currentProvider = 'groq';
+        let selectedModel = null;
+        let history = [];
+        let isLoading = false;
+        let apiKey = localStorage.getItem('groq_api_key') || '';
+
+        // Providers data
         const PROVIDERS = {
             groq: {
-                name: 'Groq',
-                endpoint: 'https://api.groq.com/openai/v1/chat/completions',
-                // Free API keys for demo - shared tier
-                apiKey: 'gsk_xRDnCcKOiWqVW3mvQ1S5WGdy',
+                name: 'Groq (Free)',
                 models: [
                     { id: 'llama-3.3-70b-versatile', name: 'Llama 3.3 70B', icon: '🦙' },
                     { id: 'llama-3.1-8b-instant', name: 'Llama 3.1 8B', icon: '🦙' },
@@ -336,10 +353,8 @@
                     { id: 'gemma2-9b-it', name: 'Gemma 2 9B', icon: '💎' },
                 ]
             },
-            openwebui: {
+            ollama: {
                 name: 'Ollama (Local)',
-                endpoint: 'http://localhost:11434/api/chat',
-                apiKey: '', // No key needed for local
                 models: [
                     { id: 'llama3.2', name: 'Llama 3.2', icon: '🦙' },
                     { id: 'llama3', name: 'Llama 3', icon: '🦙' },
@@ -352,13 +367,7 @@
             }
         };
 
-        // State
-        let currentProvider = 'groq';
-        let selectedModel = PROVIDERS.groq.models[0];
-        let history = [];
-        let isLoading = false;
-
-        // DOM
+        // DOM Elements
         const chatContainer = document.getElementById('chat-container');
         const welcome = document.getElementById('welcome');
         const messageInput = document.getElementById('message-input');
@@ -367,31 +376,64 @@
         const statusText = document.getElementById('status-text');
         const statusBadge = document.getElementById('status-badge');
         const modelSelect = document.getElementById('model-select');
-        const loadingArea = document.getElementById('loading-area');
-        const loadingBarFill = document.getElementById('loading-bar-fill');
-        const loadingText = document.getElementById('loading-text');
 
         function init() {
             renderModels();
             setupEventListeners();
-            updateStatus('ready', 'Ready - Select a model');
+            updateApiKeyStatus();
+        }
+
+        function updateApiKeyStatus() {
+            const statusEl = document.getElementById('api-key-status');
+            if (apiKey) {
+                statusEl.textContent = 'API Key Set ✓';
+                updateStatus('ready', 'Ready - Type a message!');
+            } else {
+                statusEl.textContent = 'Set API Key';
+                updateStatus('error', 'API Key required');
+            }
+        }
+
+        function showApiKeyModal() {
+            document.getElementById('api-key-modal').style.display = 'flex';
+            document.getElementById('api-key-input').value = apiKey;
+            document.getElementById('api-key-input').focus();
+        }
+
+        function hideApiKeyModal() {
+            document.getElementById('api-key-modal').style.display = 'none';
+        }
+
+        function saveApiKey() {
+            const input = document.getElementById('api-key-input');
+            apiKey = input.value.trim();
+            
+            if (apiKey) {
+                localStorage.setItem('groq_api_key', apiKey);
+                updateApiKeyStatus();
+                hideApiKeyModal();
+            }
         }
 
         function setupEventListeners() {
+            // Provider tabs
             document.querySelectorAll('.provider-tab').forEach(tab => {
                 tab.addEventListener('click', () => switchProvider(tab.dataset.provider));
             });
 
+            // Model select
             modelSelect.addEventListener('change', (e) => {
                 const provider = PROVIDERS[currentProvider];
                 selectedModel = provider.models.find(m => m.id === e.target.value);
             });
 
+            // Auto-resize textarea
             messageInput.addEventListener('input', () => {
                 messageInput.style.height = 'auto';
                 messageInput.style.height = Math.min(messageInput.scrollHeight, 150) + 'px';
             });
 
+            // Enter to send
             messageInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
@@ -402,11 +444,15 @@
 
         function switchProvider(provider) {
             currentProvider = provider;
+            
+            // Update tabs
             document.querySelectorAll('.provider-tab').forEach(tab => {
                 tab.classList.toggle('active', tab.dataset.provider === provider);
             });
-            selectedModel = PROVIDERS[provider].models[0];
+            
+            // Re-render models
             renderModels();
+            
             updateStatus('ready', `${PROVIDERS[provider].name} Ready`);
         }
 
@@ -415,28 +461,42 @@
             modelSelect.innerHTML = provider.models.map(m => 
                 `<option value="${m.id}">${m.icon} ${m.name}</option>`
             ).join('');
+            
+            // Set first model as selected
+            selectedModel = provider.models[0];
         }
 
         function updateStatus(status, text) {
             statusDot.className = 'status-dot ' + status;
             statusText.textContent = text;
-            statusBadge.classList.toggle('loading', status === 'loading');
+            
+            statusBadge.classList.remove('loading', 'error');
             if (status === 'loading') {
                 statusBadge.textContent = '⏳ Processing...';
+                statusBadge.classList.add('loading');
+            } else if (status === 'error') {
+                statusBadge.textContent = '❌ Error';
+                statusBadge.classList.add('error');
             } else {
-                statusBadge.textContent = '✨ 100% Free - No API Key!';
+                statusBadge.textContent = '✨ 100% Free!';
             }
-        }
-
-        function showLoading(show, progress = 0, text = 'Loading...') {
-            loadingArea.classList.toggle('active', show);
-            loadingBarFill.style.width = progress + '%';
-            loadingText.textContent = text;
         }
 
         async function sendMessage() {
             const text = messageInput.value.trim();
-            if (!text || isLoading) return;
+            if (!text || isLoading || !selectedModel) {
+                if (!selectedModel) {
+                    addMessage('error', '❌ Please select a model first!');
+                }
+                return;
+            }
+
+            // Check API key for Groq
+            if (currentProvider === 'groq' && !apiKey) {
+                addMessage('error', '❌ Please set your Groq API key first!\n\nClick the "Set API Key" button in the header.');
+                showApiKeyModal();
+                return;
+            }
 
             welcome.style.display = 'none';
             addMessage('user', text);
@@ -444,74 +504,55 @@
             messageInput.value = '';
             messageInput.style.height = 'auto';
 
-            updateStatus('loading', 'Generating...');
-            showLoading(true, 50, 'AI is thinking...');
+            updateStatus('loading', 'AI is thinking...');
             isLoading = true;
             sendBtn.disabled = true;
+            messageInput.disabled = true;
 
             try {
-                const provider = PROVIDERS[currentProvider];
-                let response;
+                const response = await fetch(`${API_BASE}/api/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        provider: currentProvider,
+                        model: selectedModel.id,
+                        message: text,
+                        history: history.slice(0, -1),
+                        apiKey: currentProvider === 'groq' ? apiKey : undefined
+                    })
+                });
 
-                if (currentProvider === 'openwebui') {
-                    // Ollama API
-                    const res = await fetch(provider.endpoint, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            model: modelSelect.value,
-                            messages: history,
-                            stream: false
-                        })
-                    });
-                    
-                    if (!res.ok) {
-                        if (res.status === 0) {
-                            throw new Error('Ollama not running! Please start Ollama locally.\n\nWindows/Mac: ollama serve\nLinux: sudo systemctl start ollama');
-                        }
-                        throw new Error(`HTTP ${res.status}`);
-                    }
-                    
-                    const data = await res.json();
-                    response = data.message?.content || 'No response';
-                } else {
-                    // Groq API
-                    const res = await fetch(provider.endpoint, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${provider.apiKey}`
-                        },
-                        body: JSON.stringify({
-                            model: modelSelect.value,
-                            messages: history.map(m => ({ role: m.role, content: m.content }))
-                        })
-                    });
-                    
-                    const data = await res.json();
-                    if (!res.ok) throw new Error(data.error?.message || `Error ${res.status}`);
-                    response = data.choices?.[0]?.message?.content || 'No response';
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.error || `HTTP ${response.status}`);
                 }
 
-                history.push({ role: 'assistant', content: response });
-                addMessage('assistant', response);
-                updateStatus('ready', `${provider.name} Ready`);
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                history.push({ role: 'assistant', content: data.response });
+                addMessage('assistant', data.response);
+                updateStatus('ready', `${PROVIDERS[currentProvider].name} Ready`);
                 
             } catch (error) {
-                console.error('Error:', error);
-                addMessage('error', '❌ **Error:**\n\n' + error.message);
+                console.error('Chat error:', error);
+                addMessage('error', '❌ Error: ' + error.message);
                 updateStatus('error', 'Error occurred');
             } finally {
-                showLoading(false);
                 isLoading = false;
                 sendBtn.disabled = false;
+                messageInput.disabled = false;
+                messageInput.focus();
             }
         }
 
         function addMessage(role, content) {
             const div = document.createElement('div');
             div.className = 'message ' + role;
-            const avatar = role === 'user' ? '👤' : '🤖';
+            const avatar = role === 'user' ? '👤' : role === 'error' ? '⚠️' : '🤖';
             
             div.innerHTML = `
                 <div class="message-avatar">${avatar}</div>
@@ -525,16 +566,32 @@
         }
 
         function formatMessage(text) {
-            return escapeHtml(text)
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                .replace(/`(.*?)`/g, '<code>$1</code>')
-                .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
-                .replace(/\n/g, '<br>');
+            if (!text) return '';
+            
+            // Escape HTML first
+            let formatted = escapeHtml(text);
+            
+            // Code blocks (must be before inline code)
+            formatted = formatted.replace(/```(\w*)\n?([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+            
+            // Inline code
+            formatted = formatted.replace(/`([^`]+)`/g, '<code>$1</code>');
+            
+            // Bold
+            formatted = formatted.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+            
+            // Italic
+            formatted = formatted.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+            
+            // Line breaks
+            formatted = formatted.replace(/\n/g, '<br>');
+            
+            return formatted;
         }
 
         function escapeHtml(text) {
             const div = document.createElement('div');
-            div.textContent = text || '';
+            div.textContent = text;
             return div.innerHTML;
         }
 
@@ -546,6 +603,7 @@
             updateStatus('ready', 'Chat cleared');
         }
 
+        // Initialize
         init();
     </script>
 </body>
