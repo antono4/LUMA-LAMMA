@@ -1,158 +1,125 @@
 """
-Free LLM AI Agent - Flask Backend
-Supports: Ollama (100% Local, Free, Private)
+LUMA-LAMMA - Free AI Chat Application
+Flask Backend Server
+
+Supports:
+- OpenRouter API
+- Groq API
+- Google AI (Gemini)
+- Ollama (Local/Offline)
 """
 
+import os
 import requests
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-
 
 app = Flask(__name__)
 CORS(app)
 
-OLLAMA_URL = "http://localhost:11434"
+# Configuration
+OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434")
+PORT = int(os.environ.get("PORT", 5000))
 
 
-# Default models (shown when Ollama is offline or running)
+# Default Ollama Models
 DEFAULT_MODELS = [
-    {"id": "mistral", "name": "Mistral 7B", "free": True, "icon": "🌬️"},
-    {"id": "llama3", "name": "Llama 3", "free": True, "icon": "🦙"},
-    {"id": "llama3.2", "name": "Llama 3.2", "free": True, "icon": "🦙"},
-    {"id": "phi3", "name": "Phi-3", "free": True, "icon": "📘"},
-    {"id": "qwen2.5", "name": "Qwen 2.5", "free": True, "icon": "🔮"},
-    {"id": "gemma2", "name": "Gemma 2", "free": True, "icon": "💎"},
-    {"id": "codellama", "name": "Code Llama", "free": True, "icon": "💻"},
-    {"id": "deepseek-coder", "name": "DeepSeek Coder", "free": True, "icon": "🔧"},
+    {"id": "llama3.2", "name": "Llama 3.2", "icon": "🦙", "provider": "Meta"},
+    {"id": "llama3.3", "name": "Llama 3.3", "icon": "🦙", "provider": "Meta"},
+    {"id": "mistral", "name": "Mistral 7B", "icon": "🌬️", "provider": "Mistral"},
+    {"id": "phi3", "name": "Phi-3", "icon": "📘", "provider": "Microsoft"},
+    {"id": "qwen2.5", "name": "Qwen 2.5", "icon": "🔮", "provider": "Alibaba"},
+    {"id": "gemma2", "name": "Gemma 2", "icon": "💎", "provider": "Google"},
+    {"id": "codellama", "name": "Code Llama", "icon": "💻", "provider": "Meta"},
+    {"id": "deepseek-coder", "name": "DeepSeek Coder", "icon": "🔧", "provider": "DeepSeek"},
 ]
 
-# Providers
-PROVIDERS = {
-    "ollama": {
-        "name": "Ollama (Local)",
-        "models": DEFAULT_MODELS
-    }
-}
 
-# Model info for reference
-ALL_MODELS = {
-    "mistral": {"name": "Mistral 7B", "icon": "🌬️"},
-    "llama3": {"name": "Llama 3", "icon": "🦙"},
-    "llama3.2": {"name": "Llama 3.2", "icon": "🦙"},
-    "phi3": {"name": "Phi-3", "icon": "📘"},
-    "qwen2.5": {"name": "Qwen 2.5", "icon": "🔮"},
-    "gemma2": {"name": "Gemma 2", "icon": "💎"},
-    "codellama": {"name": "Code Llama", "icon": "💻"},
-    "deepseek-coder": {"name": "DeepSeek Coder", "icon": "🔧"},
-}
-
-
-@app.route("/")
-def index():
-    """Serve the frontend HTML"""
-    return send_file("index.html")
-
-
-@app.route("/api/models", methods=["GET"])
-def get_available_models():
-    """Get list of installed Ollama models"""
+def get_ollama_models():
+    """Get installed Ollama models"""
     try:
         response = requests.get(f"{OLLAMA_URL}/api/tags", timeout=5)
         if response.status_code == 200:
             models = response.json().get("models", [])
             installed = []
             for m in models:
-                name = m["name"].split(":")[0]  # Remove tag if present
-                info = ALL_MODELS.get(name, {"name": name, "icon": "🤖"})
+                name = m["name"].split(":")[0]
+                info = next((x for x in DEFAULT_MODELS if x["id"] == name), None)
                 installed.append({
                     "id": name,
-                    "name": info.get("name", name),
-                    "icon": info.get("icon", "🤖"),
-                    "free": True
+                    "name": info["name"] if info else name,
+                    "icon": info["icon"] if info else "🤖",
+                    "provider": info["provider"] if info else "Local"
                 })
-            return jsonify({"models": installed})
-        return jsonify({"error": "Ollama not responding"}), 500
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route("/api/providers", methods=["GET"])
-def get_providers():
-    """Get all available providers and their models"""
-    try:
-        response = requests.get(f"{OLLAMA_URL}/api/tags", timeout=5)
-        if response.status_code == 200:
-            models = response.json().get("models", [])
-            installed_models = []
-            for m in models:
-                name = m["name"].split(":")[0]
-                info = ALL_MODELS.get(name, {"name": name, "icon": "🤖"})
-                installed_models.append({
-                    "id": name,
-                    "name": info.get("name", name),
-                    "icon": info.get("icon", "🤖"),
-                    "free": True
-                })
-            
-            if installed_models:
-                return jsonify({
-                    "ollama": {
-                        "name": "Ollama (Local)",
-                        "models": installed_models
-                    }
-                })
-    except requests.exceptions.RequestException:
+            return installed
+    except Exception:
         pass
+    return DEFAULT_MODELS
+
+
+# Routes
+@app.route("/")
+def index():
+    """Serve the frontend"""
+    return send_from_directory(".", "index.html")
+
+
+@app.route("/api/models", methods=["GET"])
+def list_models():
+    """List available models from all providers"""
+    provider = request.args.get("provider", "ollama")
     
-    # Always return default models (user can still see UI even if Ollama is offline)
-    return jsonify({
-        "ollama": {
+    if provider == "ollama":
+        models = get_ollama_models()
+        return jsonify({
+            "provider": "ollama",
             "name": "Ollama (Local)",
-            "models": DEFAULT_MODELS
-        }
-    })
+            "models": models
+        })
+    
+    return jsonify({"error": "Provider not supported by backend"}), 400
 
 
 @app.route("/api/chat", methods=["POST"])
 def chat():
-    """Send a chat message to Ollama"""
+    """Handle chat requests"""
     data = request.json
-    
-    model = data.get("model", "mistral")
-    message = data.get("message")
+    provider = data.get("provider", "ollama")
+    model = data.get("model", "llama3.2")
+    message = data.get("message", "")
     history = data.get("history", [])
     
     if not message:
         return jsonify({"error": "Message required"}), 400
     
+    # Ollama (Local)
+    if provider == "ollama":
+        return chat_ollama(model, message, history)
+    
+    return jsonify({"error": "Provider not supported by backend"}), 400
+
+
+def chat_ollama(model, message, history):
+    """Chat with Ollama"""
     try:
-        # Build messages array for Ollama chat API
-        messages = []
-        
-        # Add history
-        for msg in history:
-            role = msg.get("role", "user")
-            content = msg.get("content", "")
-            messages.append({"role": role, "content": content})
-        
-        # Add current message
+        messages = [{"role": msg.get("role", "user"), "content": msg.get("content", "")} 
+                     for msg in history]
         messages.append({"role": "user", "content": message})
         
-        # Call Ollama API
         payload = {
             "model": model,
             "messages": messages,
             "stream": False,
             "options": {
                 "temperature": 0.7,
-                "num_predict": 512
+                "num_predict": 2048
             }
         }
         
         response = requests.post(
             f"{OLLAMA_URL}/api/chat",
             json=payload,
-            timeout=120
+            timeout=180
         )
         
         if response.status_code != 200:
@@ -175,15 +142,22 @@ def chat():
 
 @app.route("/api/status", methods=["GET"])
 def status():
-    """Check Ollama status"""
+    """Check service status"""
     try:
-        response = requests.get(f"{OLLAMA_URL}/", timeout=5)
-        return jsonify({
-            "ollama": response.status_code == 200,
-            "url": OLLAMA_URL
-        })
+        response = requests.get(f"{OLLAMA_URL}/", timeout=3)
+        ollama_online = response.status_code == 200
     except:
-        return jsonify({"ollama": False})
+        ollama_online = False
+    
+    return jsonify({
+        "status": "ok",
+        "providers": {
+            "ollama": {
+                "online": ollama_online,
+                "url": OLLAMA_URL
+            }
+        }
+    })
 
 
 @app.route("/api/health", methods=["GET"])
@@ -191,23 +165,20 @@ def health():
     """Health check"""
     return jsonify({
         "status": "ok",
-        "provider": "Ollama (Local)",
-        "models": len(PROVIDERS["ollama"]["models"]),
-        "info": "100% Free, Private, No API Key Needed!"
+        "app": "LUMA-LAMMA",
+        "version": "2.0",
+        "info": "Free AI Chat - No API Key Required for Ollama!"
     })
 
 
 if __name__ == "__main__":
-    print("🚀 Starting Free LLM AI Agent (Ollama - Local)!")
-    print("\n📋 Features:")
-    print("   • 100% Local - No internet required")
-    print("   • 100% Private - Data never leaves your machine")
-    print("   • 100% Free - No API keys, no credits")
-    print(f"\n📡 Ollama API: {OLLAMA_URL}")
-    print("\n⚡ Available Models:")
-    for m in PROVIDERS["ollama"]["models"]:
-        print(f"   • {m['name']}")
-    print("\n🌐 Starting server on http://localhost:5000")
-    print("\n💡 To install more models: ollama pull <model-name>")
-    print("   Examples: ollama pull llama3, ollama pull codellama")
-    app.run(host="0.0.0.0", port=5000, debug=False, use_reloader=False)
+    print("🦙 LUMA-LAMMA - Free AI Chat Server")
+    print("=" * 40)
+    print(f"\n📡 Ollama: {OLLAMA_URL}")
+    print("\n⚡ Local Models (Ollama):")
+    for m in DEFAULT_MODELS:
+        print(f"   • {m['icon']} {m['name']}")
+    print(f"\n🌐 Starting on http://localhost:{PORT}")
+    print("\n💡 Install more models: ollama pull <model>")
+    print("   Examples: ollama pull llama3.2, ollama pull codellama")
+    app.run(host="0.0.0.0", port=PORT, debug=False)

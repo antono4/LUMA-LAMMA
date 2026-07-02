@@ -1,73 +1,128 @@
-# 💬 LUMA-LAMMA
+# 🦙 LUMA-LAMMA
 
 **Free AI Chat** - Chat dengan berbagai model LLM gratis langsung dari browser!
 
+![LUMA-LAMMA](https://img.shields.io/badge/Status-Active-success?style=flat-square)
+![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)
+![Platform](https://img.shields.io/badge/Platform-Web-orange?style=flat-square)
+
 ## ✨ Fitur
 
-- 🌐 **Online** - Tidak perlu install software
-- 💰 **100% Free** - 8 model gratis dari OpenRouter
-- 🎨 **UI Modern** - Interface web yang clean & responsif
-- ⚡ **Cepat** - Response time yang cepat
-- 🧠 **Multi Model** - Pilihan berbagai model LLM populer
+| Fitur | Keterangan |
+|-------|------------|
+| 🌐 **Online** | Tidak perlu install software, buka langsung di browser |
+| 💰 **100% Free** | Multiple provider gratis (OpenRouter, Groq, Google AI) |
+| 🎨 **UI Modern** | Interface web yang clean, responsif & mudah digunakan |
+| ⚡ **Cepat** | Response time yang cepat dengan streaming support |
+| 🧠 **Multi Model** | Pilihan berbagai model LLM populer |
 
 ## 🚀 Quick Start
 
-### Langsung Buka
-
-```
-https://antono4.github.io/LUMA-LAMMA/
-```
-
-### Atau Jalankan Lokal
+### Jalankan Lokal (Single File)
 
 ```bash
 # Download file
 curl -O https://raw.githubusercontent.com/antono4/LUMA-LAMMA/main/index.html
 
 # Buka langsung di browser
-# Double-click file index.html
+open index.html
 ```
 
-## 🤖 Model yang Tersedia (✅ Tested & Working)
+### Jalankan dengan Backend (Ollama Support)
 
-| # | Model | Icon | Keterangan |
-|---|-------|------|------------|
-| 1 | 🎲 Auto (Best Free) | 🎲 | Auto-select model terbaik |
-| 2 | 🧠 Liquid Thinking | 🧠 | Reasoning model |
-| 3 | ⚡ Nemotron Nano | ⚡ | NVIDIA AI - Fast |
-| 4 | 💎 Gemma 4 26B | 💎 | Google AI |
-| 5 | 🔵 DeepSeek V4 | 🔵 | DeepSeek AI |
-| 6 | 🏊 Poolside | 🏊 | Poolside AI |
-| 7 | 🤖 GPT-OSS 20B | 🤖 | OpenAI OSS |
+```bash
+# Install dependencies
+pip install -r requirements.txt
 
-## 📡 Free LLM API Resources
+# Jalankan server
+python app.py
 
-LUMA-LAMMA menggunakan API gratis dari [free-llm-api-resources](https://github.com/cheahjs/free-llm-api-resources):
+# Buka browser
+open http://localhost:5000
+```
 
-| Provider | Limit | Models |
-|----------|-------|--------|
-| OpenRouter | 20 req/min, 50 req/day | 8 free models |
-| Groq | 14,400 req/day | Llama, Mixtral |
-| Google AI | 250K tokens/min | Gemini, Gemma |
-| Cerebras | 30 req/min, 1M tokens/hour | Llama 3.3 70B |
-| Cloudflare | 10,000 neurons/day | Llama, Qwen, Gemma |
+## 🤖 Model yang Tersedia
 
-## 🎯 Penggunaan
+### OpenRouter (20 req/min, Free Tier)
 
-1. **Buka** https://antono4.github.io/LUMA-LAMMA/
-2. **Pilih Model** - Klik model di sidebar kiri
-3. **Ketik Pesan** - Tulis pertanyaan Anda
-4. **Kirim** - Tekan Enter atau klik ➤
+| Model | Provider | Keterangan |
+|-------|----------|------------|
+| 🎲 Auto | Auto-select | Pilih model terbaik otomatis |
+| 🧠 Claude 3.5 Haiku | Anthropic | Fast reasoning |
+| ⚡ Nemotron 70B | NVIDIA | High performance |
+| 💎 Gemma 4 27B | Google | Google's latest |
+| 🔵 DeepSeek V4 | DeepSeek | Chinese LLM |
+| 🏊 Poolside 70B | Poolside | Open source |
+| 🦙 Llama 3 8B | Meta | Facebook's LLM |
+
+### Groq (Fast Inference)
+
+| Model | Provider | Keterangan |
+|-------|----------|------------|
+| 🦙 Llama 3.3 70B | Meta | Versatile |
+| 🦙 Llama 3.1 8B | Meta | Fast & small |
+| 🌀 Mixtral 8x7B | Mistral | Mixture of experts |
+| 💎 Gemma 2 9B | Google | Lightweight |
+
+### Google AI (Gemini)
+
+| Model | Keterangan |
+|-------|------------|
+| ⚡ Gemini 2.0 Flash | Latest, fastest |
+| 💨 Gemini 1.5 Flash | Balanced |
+| 🔮 Gemini 1.5 Pro | Most capable |
+
+### Ollama (Local/Offline)
+
+```bash
+# Install Ollama
+curl -fsSL https://ollama.com/install.sh | sh
+
+# Download models
+ollama pull llama3.2
+ollama pull codellama
+
+# Jalankan server
+ollama serve
+```
 
 ## 📁 Struktur Project
 
 ```
 LUMA-LAMMA/
-├── index.html          # Web Interface (single file)
+├── index.html          # Web Interface (single file - bisa jalan sendiri)
+├── app.py              # Flask Backend (optional - untuk Ollama)
+├── requirements.txt    # Python dependencies
+├── favicon.svg         # App icon
 └── README.md           # Dokumentasi
 ```
 
-## 🔧 Setup Ollama (Optional - Local AI)
+## 🎯 Cara Penggunaan
+
+1. **Buka** `index.html` di browser (atau jalankan `python app.py`)
+2. **Pilih Provider** - Klik tab provider di sidebar
+3. **Set API Key** - Klik tombol "Set API Key" di header
+4. **Pilih Model** - Pilih model dari daftar di sidebar
+5. **Mulai Chat** - Ketik pesan dan tekan Enter
+
+## 🔑 API Key Setup
+
+### OpenRouter
+1. Kunjungi [openrouter.ai/keys](https://openrouter.ai/keys)
+2. Generate API key baru
+3. Copy dan paste di aplikasi
+
+### Groq
+1. Kunjungi [console.groq.com](https://console.groq.com)
+2. Buat API key
+3. Masukkan di aplikasi
+
+### Google AI
+1. Kunjungi [aistudio.google.com](https://aistudio.google.com)
+2. Get API key dari settings
+3. Gunakan di aplikasi
+
+## 🔧 Setup Ollama (Optional)
 
 Untuk AI offline tanpa internet:
 
@@ -81,15 +136,49 @@ curl -fsSL https://ollama.com/install.sh | sh
 # Download model
 ollama pull llama3.2
 
-# Jalankan
+# Jalankan (akan berjalan di background)
 ollama serve
+
+# Model lainnya
+ollama pull mistral
+ollama pull codellama
+ollama pull phi3
 ```
+
+## 🌐 Deployment
+
+### Static Hosting (index.html only)
+Upload `index.html` ke:
+- GitHub Pages
+- Netlify
+- Vercel
+- Cloudflare Pages
+
+### Docker
+
+```dockerfile
+FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+EXPOSE 5000
+CMD ["python", "app.py"]
+```
+
+### Railway / Render
+
+1. Connect repository
+2. Set build command: `pip install -r requirements.txt`
+3. Set start command: `python app.py`
 
 ## 📚 Referensi
 
+- [OpenRouter](https://openrouter.ai) - LLM API Aggregator
+- [Groq](https://console.groq.com) - Fast LLM Inference
+- [Google AI Studio](https://aistudio.google.com) - Gemini API
+- [Ollama](https://ollama.com) - Local LLM Runtime
 - [Free LLM API Resources](https://github.com/cheahjs/free-llm-api-resources)
-- [OpenRouter](https://openrouter.ai)
-- [Ollama](https://ollama.com)
 
 ## 📜 License
 
