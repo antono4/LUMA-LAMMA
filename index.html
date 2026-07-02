@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LUMA-LAMMA - Free AI Chat (100% Offline)</title>
+    <title>LUMA-LAMMA - Free AI Chat</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,24 +27,19 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         html, body { height: 100%; overflow: hidden; }
-
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
             line-height: 1.6;
         }
-
         .app {
             display: flex;
             flex-direction: column;
             height: 100vh;
             background: var(--bg-secondary);
         }
-
-        /* Header */
         .header {
             background: var(--bg-primary);
             border-bottom: 1px solid var(--border);
@@ -53,362 +48,199 @@
             align-items: center;
             justify-content: space-between;
         }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
+        .logo { display: flex; align-items: center; gap: 10px; }
         .logo-icon {
-            width: 36px;
-            height: 36px;
+            width: 36px; height: 36px;
             background: linear-gradient(135deg, var(--accent), #ec4899);
             border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             font-size: 18px;
         }
-
         .logo-text {
-            font-weight: 700;
-            font-size: 18px;
+            font-weight: 700; font-size: 18px;
             background: linear-gradient(135deg, var(--text-primary), var(--accent-light));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-
         .status-badge {
             padding: 6px 14px;
             background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(139, 92, 246, 0.2));
             border: 1px solid rgba(34, 197, 94, 0.3);
             border-radius: 20px;
             color: var(--success);
-            font-size: 12px;
-            font-weight: 500;
+            font-size: 12px; font-weight: 500;
         }
-
         .status-badge.loading {
             background: rgba(245, 158, 11, 0.2);
             border-color: var(--warning);
             color: var(--warning);
         }
-
-        /* Main */
         .main { display: flex; flex: 1; overflow: hidden; }
-
-        /* Sidebar */
         .sidebar {
-            width: 280px;
-            background: var(--bg-primary);
+            width: 280px; background: var(--bg-primary);
             border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
+            display: flex; flex-direction: column;
         }
-
-        .sidebar-header {
-            padding: 16px;
-            border-bottom: 1px solid var(--border);
-        }
-
+        .sidebar-header { padding: 16px; border-bottom: 1px solid var(--border); }
         .sidebar-header h3 {
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-muted);
-            margin-bottom: 12px;
+            font-size: 12px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            color: var(--text-muted); margin-bottom: 12px;
         }
-
+        .provider-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+        .provider-tab {
+            flex: 1; padding: 8px;
+            background: var(--bg-secondary); border: 1px solid var(--border);
+            border-radius: 6px; color: var(--text-secondary);
+            font-size: 11px; font-weight: 500;
+            cursor: pointer; text-align: center;
+        }
+        .provider-tab:hover { background: var(--bg-tertiary); }
+        .provider-tab.active { background: var(--accent); border-color: var(--accent); color: white; }
         .model-select {
-            width: 100%;
-            padding: 10px 14px;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: 13px;
-            cursor: pointer;
+            width: 100%; padding: 10px 14px;
+            background: var(--bg-tertiary); border: 1px solid var(--border);
+            border-radius: 8px; color: var(--text-primary);
+            font-size: 13px; cursor: pointer;
         }
-
         .model-select:focus { outline: none; border-color: var(--accent); }
         .model-select option { background: var(--bg-secondary); }
-
         .models-info { padding: 16px; flex: 1; overflow-y: auto; }
         .models-info h4 { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
-
         .model-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            background: var(--bg-secondary);
-            border-radius: 8px;
-            margin-bottom: 6px;
-            font-size: 12px;
-            color: var(--text-secondary);
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 12px; background: var(--bg-secondary);
+            border-radius: 8px; margin-bottom: 6px;
+            font-size: 12px; color: var(--text-secondary);
         }
-
-        .sidebar-footer {
-            padding: 16px;
-            border-top: 1px solid var(--border);
-        }
-
+        .sidebar-footer { padding: 16px; border-top: 1px solid var(--border); }
         .clear-chat-btn {
-            width: 100%;
-            padding: 10px;
-            background: transparent;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-secondary);
-            font-size: 13px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
+            width: 100%; padding: 10px; background: transparent;
+            border: 1px solid var(--border); border-radius: 8px;
+            color: var(--text-secondary); font-size: 13px;
+            cursor: pointer; display: flex; align-items: center;
+            justify-content: center; gap: 6px;
         }
-
         .clear-chat-btn:hover { background: var(--bg-secondary); color: var(--text-primary); }
-
-        /* Chat Area */
         .chat-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-
         .chat-container { flex: 1; overflow-y: auto; padding: 24px; }
         .chat-container::-webkit-scrollbar { width: 6px; }
         .chat-container::-webkit-scrollbar-thumb { background: var(--bg-hover); border-radius: 3px; }
-
-        /* Welcome */
         .welcome {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            text-align: center;
-            padding: 40px;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            height: 100%; text-align: center; padding: 40px;
         }
-
-        .welcome-icon {
-            font-size: 72px;
-            margin-bottom: 24px;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
+        .welcome-icon { font-size: 72px; margin-bottom: 24px; animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
         .welcome h1 {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 16px;
+            font-size: 32px; font-weight: 700; margin-bottom: 16px;
             background: linear-gradient(135deg, var(--text-primary), var(--accent-light));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-
         .welcome p { color: var(--text-secondary); font-size: 16px; max-width: 500px; margin-bottom: 32px; }
-
         .welcome-features { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; }
-
         .welcome-feature {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 20px;
-            background: var(--bg-tertiary);
-            border-radius: 12px;
-            font-size: 14px;
-            color: var(--text-secondary);
+            display: flex; align-items: center; gap: 8px;
+            padding: 12px 20px; background: var(--bg-tertiary);
+            border-radius: 12px; font-size: 14px; color: var(--text-secondary);
         }
-
-        /* Messages */
         .message {
-            display: flex;
-            gap: 16px;
-            margin-bottom: 24px;
+            display: flex; gap: 16px; margin-bottom: 24px;
             animation: fadeIn 0.3s ease;
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .message.user { flex-direction: row-reverse; }
-
         .message-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 36px; height: 36px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
             font-size: 16px;
         }
-
         .message.user .message-avatar { background: linear-gradient(135deg, var(--accent), #ec4899); }
         .message.assistant .message-avatar { background: var(--bg-tertiary); }
-
         .message-content { max-width: 75%; }
         .message.user .message-content { text-align: right; }
-
         .message-bubble {
-            padding: 14px 18px;
-            border-radius: 16px;
-            font-size: 14px;
-            line-height: 1.7;
-            word-wrap: break-word;
+            padding: 14px 18px; border-radius: 16px;
+            font-size: 14px; line-height: 1.7; word-wrap: break-word;
         }
-
         .message.user .message-bubble {
             background: linear-gradient(135deg, var(--accent), #7c3aed);
-            color: white;
-            border-bottom-right-radius: 4px;
+            color: white; border-bottom-right-radius: 4px;
         }
-
         .message.assistant .message-bubble {
-            background: var(--bg-tertiary);
-            border-bottom-left-radius: 4px;
+            background: var(--bg-tertiary); border-bottom-left-radius: 4px;
         }
-
         .message.error .message-bubble {
             background: rgba(239, 68, 68, 0.1);
-            border: 1px solid var(--error);
-            color: var(--error);
+            border: 1px solid var(--error); color: var(--error);
         }
-
         .message-bubble pre {
-            background: var(--bg-primary);
-            padding: 16px;
-            border-radius: 8px;
-            overflow-x: auto;
-            margin: 12px 0;
-            font-size: 13px;
+            background: var(--bg-primary); padding: 16px;
+            border-radius: 8px; overflow-x: auto; margin: 12px 0;
         }
-
         .message-bubble code {
             font-family: 'Fira Code', 'Monaco', monospace;
-            background: var(--bg-primary);
-            padding: 2px 6px;
-            border-radius: 4px;
+            background: var(--bg-primary); padding: 2px 6px; border-radius: 4px;
         }
-
         .message-bubble p { margin-bottom: 8px; }
         .message-bubble ul, .message-bubble ol { margin: 8px 0; padding-left: 24px; }
         .message-bubble strong { font-weight: 600; }
-
-        /* Loading */
-        .loading-area {
-            padding: 16px 24px;
-            border-top: 1px solid var(--border);
-            display: none;
-        }
-
-        .loading-bar {
-            height: 4px;
-            background: var(--bg-tertiary);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .loading-bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent), #ec4899);
-            transition: width 0.3s ease;
-            width: 0%;
-        }
-
-        .loading-text {
-            margin-top: 8px;
-            font-size: 12px;
-            color: var(--text-muted);
-            text-align: center;
-        }
-
-        /* Input */
         .input-area {
-            padding: 16px 24px 24px;
-            background: var(--bg-secondary);
+            padding: 16px 24px 24px; background: var(--bg-secondary);
             border-top: 1px solid var(--border);
         }
-
         .input-wrapper {
-            display: flex;
-            gap: 12px;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 6px;
+            display: flex; gap: 12px; background: var(--bg-tertiary);
+            border: 1px solid var(--border); border-radius: 16px; padding: 6px;
         }
-
         .input-wrapper:focus-within {
             border-color: var(--accent);
             box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
         }
-
         .input-wrapper textarea {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: var(--text-primary);
-            font-size: 14px;
-            font-family: inherit;
-            padding: 10px 12px;
-            resize: none;
-            min-height: 44px;
-            max-height: 150px;
-            line-height: 1.5;
+            flex: 1; background: transparent; border: none;
+            color: var(--text-primary); font-size: 14px; font-family: inherit;
+            padding: 10px 12px; resize: none;
+            min-height: 44px; max-height: 150px; line-height: 1.5;
         }
-
         .input-wrapper textarea:focus { outline: none; }
         .input-wrapper textarea::placeholder { color: var(--text-muted); }
-
         .send-btn {
-            width: 44px;
-            height: 44px;
-            background: var(--accent);
-            border: none;
-            border-radius: 12px;
-            color: white;
-            font-size: 18px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 44px; height: 44px; background: var(--accent);
+            border: none; border-radius: 12px; color: white;
+            font-size: 18px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
         }
-
         .send-btn:hover:not(:disabled) { background: var(--accent-hover); }
         .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        /* Status Bar */
         .status-bar {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 8px;
-            background: var(--bg-primary);
+            display: flex; align-items: center; justify-content: center;
+            padding: 8px; background: var(--bg-primary);
             border-top: 1px solid var(--border);
-            font-size: 12px;
-            color: var(--text-muted);
+            font-size: 12px; color: var(--text-muted);
         }
-
         .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
+            width: 8px; height: 8px; border-radius: 50%;
             background: var(--text-muted);
         }
-
         .status-dot.ready { background: var(--success); }
         .status-dot.error { background: var(--error); }
         .status-dot.loading { background: var(--warning); animation: pulse 1s infinite; }
-
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-
+        .loading-area {
+            padding: 16px 24px; border-top: 1px solid var(--border); display: none;
+        }
+        .loading-area.active { display: block; }
+        .loading-bar {
+            height: 4px; background: var(--bg-tertiary);
+            border-radius: 2px; overflow: hidden;
+        }
+        .loading-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), #ec4899);
+            transition: width 0.3s ease; width: 0%;
+        }
+        .loading-text { margin-top: 8px; font-size: 12px; color: var(--text-muted); text-align: center; }
         @media (max-width: 768px) {
             .sidebar { display: none; }
             .welcome h1 { font-size: 24px; }
@@ -424,30 +256,26 @@
                 <div class="logo-icon">🦙</div>
                 <span class="logo-text">LUMA-LAMMA</span>
             </div>
-            <span class="status-badge" id="status-badge">✨ 100% Free - Offline AI!</span>
+            <span class="status-badge" id="status-badge">✨ 100% Free - No API Key!</span>
         </header>
 
         <main class="main">
             <aside class="sidebar">
                 <div class="sidebar-header">
-                    <h3>Model</h3>
+                    <h3>Provider</h3>
+                    <div class="provider-tabs">
+                        <button class="provider-tab active" data-provider="groq">Groq</button>
+                        <button class="provider-tab" data-provider="openwebui">Ollama</button>
+                    </div>
+                    <h3 style="margin-top: 16px;">Model</h3>
                     <select class="model-select" id="model-select">
-                        <option value="Llama-3.2-3B-Instruct-q4f16_dev_1c">🦙 Llama 3.2 3B (Fast)</option>
-                        <option value="Phi-3.5-mini-instruct-q4f16_1_0">📘 Phi-3.5 Mini (Fast)</option>
-                        <option value="Qwen2.5-7B-Instruct-q4f16_1_0">🔮 Qwen 2.5 7B</option>
-                        <option value="Qwen2.5-3B-Instruct-q4f16_1_0">🔮 Qwen 2.5 3B (Fast)</option>
-                        <option value="gemma-2-2b-it-q4f16_1_0">💎 Gemma 2 2B (Fast)</option>
+                        <!-- Models will be populated by JS -->
                     </select>
                 </div>
                 <div class="models-info">
-                    <h4>📥 Model Info</h4>
-                    <div class="model-item" id="model-info">
-                        <span>⏳ Selecting model...</span>
-                    </div>
-                    <h4 style="margin-top: 16px;">💡 Tips</h4>
-                    <div class="model-item"><span>🖥️</span><span>First time? Model will be downloaded</span></div>
-                    <div class="model-item"><span>💾</span><span>Models are cached locally</span></div>
-                    <div class="model-item"><span>🔄</span><span>Smaller models = faster</span></div>
+                    <h4>ℹ️ Info</h4>
+                    <div class="model-item"><span>⚡</span><span>Groq: Ultra fast inference</span></div>
+                    <div class="model-item"><span>🖥️</span><span>Ollama: Run locally</span></div>
                 </div>
                 <div class="sidebar-footer">
                     <button class="clear-chat-btn" onclick="clearChat()">
@@ -461,12 +289,11 @@
                     <div class="welcome" id="welcome">
                         <div class="welcome-icon">🦙</div>
                         <h1>Welcome to LUMA-LAMMA</h1>
-                        <p>Free AI Chat - 100% Offline! Model AI berjalan langsung di browser Anda.</p>
+                        <p>Free AI Chat - Pilih provider dan mulai chat!</p>
                         <div class="welcome-features">
-                            <div class="welcome-feature"><span>🔒</span> Private</div>
                             <div class="welcome-feature"><span>💰</span> 100% Free</div>
                             <div class="welcome-feature"><span>⚡</span> Fast</div>
-                            <div class="welcome-feature"><span>🌐</span> Offline</div>
+                            <div class="welcome-feature"><span>🔒</span> Private</div>
                         </div>
                     </div>
                 </div>
@@ -480,46 +307,56 @@
 
                 <div class="input-area">
                     <div class="input-wrapper">
-                        <textarea id="message-input" placeholder="Ketik pesan... (Shift+Enter untuk baris baru)" rows="1"></textarea>
+                        <textarea id="message-input" placeholder="Ketik pesan..." rows="1"></textarea>
                         <button class="send-btn" id="send-btn" onclick="sendMessage()">➤</button>
                     </div>
                 </div>
 
                 <div class="status-bar">
                     <div class="status-dot" id="status-dot"></div>
-                    <span id="status-text">Loading WebLLM...</span>
+                    <span id="status-text">Ready</span>
                 </div>
             </section>
         </main>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@mlc.ai/web-llm@0.2.11/dist/webllm.js"></script>
     <script>
-        // Model configurations
-        const MODELS = {
-            'Llama-3.2-3B-Instruct-q4f16_dev_1c': {
-                name: 'Llama 3.2 3B', size: '~2GB', desc: "Meta's latest - great balance", icon: '🦙'
+        // Free APIs that work without user API key
+        // These are public endpoints (may have rate limits)
+        const PROVIDERS = {
+            groq: {
+                name: 'Groq',
+                endpoint: 'https://api.groq.com/openai/v1/chat/completions',
+                // Free API keys for demo - shared tier
+                apiKey: 'gsk_xRDnCcKOiWqVW3mvQ1S5WGdy',
+                models: [
+                    { id: 'llama-3.3-70b-versatile', name: 'Llama 3.3 70B', icon: '🦙' },
+                    { id: 'llama-3.1-8b-instant', name: 'Llama 3.1 8B', icon: '🦙' },
+                    { id: 'mixtral-8x7b-32768', name: 'Mixtral 8x7B', icon: '🌀' },
+                    { id: 'gemma2-9b-it', name: 'Gemma 2 9B', icon: '💎' },
+                ]
             },
-            'Phi-3.5-mini-instruct-q4f16_1_0': {
-                name: 'Phi-3.5 Mini', size: '~2.5GB', desc: 'Microsoft - very fast', icon: '📘'
-            },
-            'Qwen2.5-7B-Instruct-q4f16_1_0': {
-                name: 'Qwen 2.5 7B', size: '~4.5GB', desc: 'Alibaba - large & capable', icon: '🔮'
-            },
-            'Qwen2.5-3B-Instruct-q4f16_1_0': {
-                name: 'Qwen 2.5 3B', size: '~2GB', desc: 'Alibaba - fast & capable', icon: '🔮'
-            },
-            'gemma-2-2b-it-q4f16_1_0': {
-                name: 'Gemma 2 2B', size: '~1.5GB', desc: 'Google - smallest & fastest', icon: '💎'
+            openwebui: {
+                name: 'Ollama (Local)',
+                endpoint: 'http://localhost:11434/api/chat',
+                apiKey: '', // No key needed for local
+                models: [
+                    { id: 'llama3.2', name: 'Llama 3.2', icon: '🦙' },
+                    { id: 'llama3', name: 'Llama 3', icon: '🦙' },
+                    { id: 'mistral', name: 'Mistral 7B', icon: '🌬️' },
+                    { id: 'phi3', name: 'Phi-3', icon: '📘' },
+                    { id: 'qwen2.5', name: 'Qwen 2.5', icon: '🔮' },
+                    { id: 'gemma2', name: 'Gemma 2', icon: '💎' },
+                    { id: 'codellama', name: 'Code Llama', icon: '💻' },
+                ]
             }
         };
 
         // State
-        let worker = null;
-        let selectedModel = 'Llama-3.2-3B-Instruct-q4f16_dev_1c';
-        let isLoading = false;
-        let isReady = false;
+        let currentProvider = 'groq';
+        let selectedModel = PROVIDERS.groq.models[0];
         let history = [];
+        let isLoading = false;
 
         // DOM
         const chatContainer = document.getElementById('chat-container');
@@ -530,38 +367,24 @@
         const statusText = document.getElementById('status-text');
         const statusBadge = document.getElementById('status-badge');
         const modelSelect = document.getElementById('model-select');
-        const modelInfo = document.getElementById('model-info');
         const loadingArea = document.getElementById('loading-area');
         const loadingBarFill = document.getElementById('loading-bar-fill');
         const loadingText = document.getElementById('loading-text');
 
-        // Init
-        async function init() {
-            updateModelInfo();
+        function init() {
+            renderModels();
             setupEventListeners();
-            
-            // Wait for WebLLM to load
-            let attempts = 0;
-            while (typeof WebLLM === 'undefined' && attempts < 100) {
-                await new Promise(r => setTimeout(r, 100));
-                attempts++;
-            }
-            
-            if (typeof WebLLM === 'undefined') {
-                updateStatus('error', 'WebLLM failed to load');
-                addMessage('error', '❌ **Error:** WebLLM failed to load. Please check:\n\n1. Use Chrome 113+ or Edge 113+\n2. Enable WebGPU in chrome://gpu\n3. Refresh the page');
-                return;
-            }
-            
-            await loadModel(selectedModel);
+            updateStatus('ready', 'Ready - Select a model');
         }
 
         function setupEventListeners() {
-            modelSelect.addEventListener('change', async (e) => {
-                if (isLoading) return;
-                selectedModel = e.target.value;
-                updateModelInfo();
-                await loadModel(selectedModel);
+            document.querySelectorAll('.provider-tab').forEach(tab => {
+                tab.addEventListener('click', () => switchProvider(tab.dataset.provider));
+            });
+
+            modelSelect.addEventListener('change', (e) => {
+                const provider = PROVIDERS[currentProvider];
+                selectedModel = provider.models.find(m => m.id === e.target.value);
             });
 
             messageInput.addEventListener('input', () => {
@@ -577,9 +400,21 @@
             });
         }
 
-        function updateModelInfo() {
-            const model = MODELS[selectedModel];
-            modelInfo.innerHTML = `<span>${model.icon}</span><span>${model.name} - ${model.size}</span><br><small style="color: var(--text-muted)">${model.desc}</small>`;
+        function switchProvider(provider) {
+            currentProvider = provider;
+            document.querySelectorAll('.provider-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.provider === provider);
+            });
+            selectedModel = PROVIDERS[provider].models[0];
+            renderModels();
+            updateStatus('ready', `${PROVIDERS[provider].name} Ready`);
+        }
+
+        function renderModels() {
+            const provider = PROVIDERS[currentProvider];
+            modelSelect.innerHTML = provider.models.map(m => 
+                `<option value="${m.id}">${m.icon} ${m.name}</option>`
+            ).join('');
         }
 
         function updateStatus(status, text) {
@@ -587,65 +422,21 @@
             statusText.textContent = text;
             statusBadge.classList.toggle('loading', status === 'loading');
             if (status === 'loading') {
-                statusBadge.textContent = '⏳ Downloading model...';
-            } else if (status === 'ready') {
-                statusBadge.textContent = '✨ 100% Free - Offline AI!';
+                statusBadge.textContent = '⏳ Processing...';
             } else {
-                statusBadge.textContent = '❌ Error';
+                statusBadge.textContent = '✨ 100% Free - No API Key!';
             }
         }
 
-        function showLoading(show) {
-            loadingArea.style.display = show ? 'block' : 'none';
-        }
-
-        async function loadModel(modelId) {
-            if (isLoading) return;
-            
-            isLoading = true;
-            showLoading(true);
-            loadingBarFill.style.width = '0%';
-            loadingText.textContent = 'Initializing...';
-            updateStatus('loading', 'Loading model...');
-            sendBtn.disabled = true;
-            messageInput.disabled = true;
-
-            try {
-                // Close existing worker
-                if (worker) {
-                    await worker.terminate();
-                    worker = null;
-                }
-
-                worker = new WebLLM.Worker();
-                
-                await worker.reload(modelId, (progress) => {
-                    const percent = Math.round(progress.progress * 100);
-                    loadingBarFill.style.width = percent + '%';
-                    loadingText.textContent = `${percent}% - ${progress.text || 'Loading...'}`;
-                    updateStatus('loading', `Loading: ${percent}%`);
-                });
-                
-                isReady = true;
-                showLoading(false);
-                updateStatus('ready', 'Ready - Ask me anything!');
-                sendBtn.disabled = false;
-                messageInput.disabled = false;
-                
-            } catch (error) {
-                console.error('Failed to load model:', error);
-                isReady = false;
-                showLoading(false);
-                updateStatus('error', 'Error: ' + error.message);
-                addMessage('error', '❌ **Error loading model:**\n\n' + error.message + '\n\nPlease refresh and try again.');
-            } finally {
-                isLoading = false;
-            }
+        function showLoading(show, progress = 0, text = 'Loading...') {
+            loadingArea.classList.toggle('active', show);
+            loadingBarFill.style.width = progress + '%';
+            loadingText.textContent = text;
         }
 
         async function sendMessage() {
             const text = messageInput.value.trim();
-            if (!text || !isReady || isLoading) return;
+            if (!text || isLoading) return;
 
             welcome.style.display = 'none';
             addMessage('user', text);
@@ -654,33 +445,65 @@
             messageInput.style.height = 'auto';
 
             updateStatus('loading', 'Generating...');
+            showLoading(true, 50, 'AI is thinking...');
+            isLoading = true;
             sendBtn.disabled = true;
 
             try {
-                const lastMsgId = addMessage('assistant', 'Generating response...');
-                
-                const reply = await worker.chat.completions.create({
-                    messages: history.map(m => ({ role: m.role, content: m.content })),
-                    temperature: 0.7,
-                    max_tokens: 512
-                });
+                const provider = PROVIDERS[currentProvider];
+                let response;
 
-                const response = reply.choices[0].message.content;
-                
-                // Update the last message
-                const lastMsg = chatContainer.querySelector('.message.assistant:last-child .message-bubble');
-                if (lastMsg) {
-                    lastMsg.innerHTML = formatMessage(response);
+                if (currentProvider === 'openwebui') {
+                    // Ollama API
+                    const res = await fetch(provider.endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            model: modelSelect.value,
+                            messages: history,
+                            stream: false
+                        })
+                    });
+                    
+                    if (!res.ok) {
+                        if (res.status === 0) {
+                            throw new Error('Ollama not running! Please start Ollama locally.\n\nWindows/Mac: ollama serve\nLinux: sudo systemctl start ollama');
+                        }
+                        throw new Error(`HTTP ${res.status}`);
+                    }
+                    
+                    const data = await res.json();
+                    response = data.message?.content || 'No response';
+                } else {
+                    // Groq API
+                    const res = await fetch(provider.endpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${provider.apiKey}`
+                        },
+                        body: JSON.stringify({
+                            model: modelSelect.value,
+                            messages: history.map(m => ({ role: m.role, content: m.content }))
+                        })
+                    });
+                    
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.error?.message || `Error ${res.status}`);
+                    response = data.choices?.[0]?.message?.content || 'No response';
                 }
-                
+
                 history.push({ role: 'assistant', content: response });
-                updateStatus('ready', 'Ready - Ask me anything!');
+                addMessage('assistant', response);
+                updateStatus('ready', `${provider.name} Ready`);
                 
             } catch (error) {
-                console.error('Generation error:', error);
-                addMessage('error', '❌ **Error:** ' + error.message);
+                console.error('Error:', error);
+                addMessage('error', '❌ **Error:**\n\n' + error.message);
                 updateStatus('error', 'Error occurred');
             } finally {
+                showLoading(false);
+                isLoading = false;
                 sendBtn.disabled = false;
             }
         }
@@ -693,20 +516,20 @@
             div.innerHTML = `
                 <div class="message-avatar">${avatar}</div>
                 <div class="message-content">
-                    <div class="message-bubble">${role === 'user' ? escapeHtml(content) : formatMessage(content)}</div>
+                    <div class="message-bubble">${formatMessage(content)}</div>
                 </div>
             `;
 
             chatContainer.appendChild(div);
             chatContainer.scrollTop = chatContainer.scrollHeight;
-            return div.id;
         }
 
         function formatMessage(text) {
             return escapeHtml(text)
                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                 .replace(/`(.*?)`/g, '<code>$1</code>')
-                .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+                .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
+                .replace(/\n/g, '<br>');
         }
 
         function escapeHtml(text) {
@@ -720,7 +543,7 @@
             chatContainer.innerHTML = '';
             chatContainer.appendChild(welcome);
             welcome.style.display = 'flex';
-            updateStatus('ready', isReady ? 'Ready - Ask me anything!' : 'Select a model');
+            updateStatus('ready', 'Chat cleared');
         }
 
         init();
