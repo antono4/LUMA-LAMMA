@@ -1,5 +1,8 @@
 # 🦙 LUMA-LAMMA
 
+> **Created by Antono**
+
+
 **Free AI Chat** - Chat dengan AI gratis langsung dari browser!
 
 ![LUMA-LAMMA](https://img.shields.io/badge/Status-Active-success?style=flat-square)
