@@ -1,2 +1,32 @@
-Last updated: 2026-09-07 11:58:43 WIB
-Last updated: 2026-09-07 12:59:19 WIB
+# LUMA-LAMMA
+
+
+
+## 📋 Overview
+
+This repository contains **13 files** and is built with the following technologies:
+
+Python, HTML
+
+## 🚀 Quick Start
+
+```bash
+pip install -r requirements.txt
+python main.py
+```
+
+## ✨ Features
+
+- 🔧 Environment config included
+- 📝 Auto-generated documentation
+
+## 🛠️ Technologies
+
+Python, HTML
+
+## 📄 License
+
+MIT License
+
+---
+*Last updated: 2026-09-07 13:02:45 WIB*
